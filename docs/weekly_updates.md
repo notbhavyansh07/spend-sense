@@ -38,3 +38,13 @@ Implemented character n-gram TF-IDF feature extraction (char_wb, ngrams 2-4) acr
   - `python -m unittest discover -s tests -v` (11 tests in 9.463s, OK)
 - **Test count and result**: 11 tests run, 11 passed (`OK`)
 - **Anything untested**: None
+
+### Week 4 — Model Evaluation and Embeddings
+Evaluated category classifiers on held-out test data and saved the confusion matrix to docs/confusion_matrix.png. Evaluated all models on data/hard_test.csv using python main.py compare, revealing a steep accuracy drop from 1.000 on the synthetic test split to 0.619 for LinearSVC (0.643 for Naive Bayes, 0.548 for Logistic Regression) due to out-of-vocabulary merchants. Conducted a detailed error analysis in docs/ERROR_ANALYSIS.md analyzing all 17 misclassifications caused by keyword polysemy (e.g. 'membership' in IEEE vs gym) and unseen vendors. Built spendsense/embed.py supporting an optional sentence-transformers pipeline with all-MiniLM-L6-v2, and verified graceful fallback when the package is absent.
+
+- **Files changed**: `spendsense/embed.py`, `spendsense/categorizer.py`, `docs/confusion_matrix.png`, `docs/ERROR_ANALYSIS.md`, `docs/viva/week_4.md`, `tests/test_spendsense.py`, `docs/weekly_updates.md`
+- **Commands run**:
+  - `python main.py compare` (Naive Bayes: 0.643, LinearSVC: 0.619, Logistic Regression: 0.548)
+  - `python -m unittest discover -s tests -v` (Ran 13 tests in 18.581s, OK)
+- **Test count and result**: 13 tests run, 13 passed (`OK`)
+- **Anything untested**: SentenceTransformer inference marked untested because `sentence-transformers` is an optional dependency not installed in this environment

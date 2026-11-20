@@ -86,6 +86,17 @@ class TestCategorizer(unittest.TestCase):
         self.assertIn("best_model", data)
         self.assertIn("test_accuracy", data)
 
+    def test_confusion_matrix_created(self):
+        cm_path = Path("docs") / "confusion_matrix.png"
+        self.assertTrue(cm_path.exists())
+        self.assertGreater(cm_path.stat().st_size, 1000)
+
+    def test_embed_module(self):
+        from spendsense import embed
+        self.assertFalse(embed.available())
+        pipe = embed.make_pipeline()
+        self.assertIsNotNone(pipe)
+
 
 class TestSyntheticData(unittest.TestCase):
     def test_generate_labeled_distribution(self):

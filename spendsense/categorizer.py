@@ -129,8 +129,49 @@ def train(data_path=DATA_PATH, save=True, use_embeddings=False):
         MODEL_PATH.parent.mkdir(parents=True, exist_ok=True)
         joblib.dump(best_model, MODEL_PATH)
         METRICS_PATH.write_text(json.dumps(result, indent=2), encoding="utf-8")
+        try:
+            plot_confusion_matrix(best_model, x_test, y_test)
+        except Exception:
+            pass
 
     return result
+
+
+def plot_confusion_matrix(model=None, x_test=None, y_test=None, output_path=None):
+    """Plots and saves the confusion matrix to docs/confusion_matrix.png."""
+    import matplotlib.pyplot as plt
+    from sklearn.metrics import ConfusionMatrixDisplay, confusion_matrix
+
+    if model is None:
+        model = load()
+    if x_test is None or y_test is None:
+        df = load_dataset()
+        _, x_test, _, y_test = train_test_split(
+            df["text"],
+            df["category"],
+            test_size=0.2,
+            random_state=42,
+            stratify=df["category"],
+        )
+    if output_path is None:
+        output_path = ROOT / "docs" / "confusion_matrix.png"
+
+    output_path = Path(output_path)
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+
+    y_pred = model.predict(x_test)
+    labels = sorted(list(set(y_test)))
+    cm = confusion_matrix(y_test, y_pred, labels=labels)
+
+    fig, ax = plt.subplots(figsize=(8, 6.5))
+    disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=labels)
+    disp.plot(ax=ax, cmap="Blues", colorbar=False, xticks_rotation=35)
+    plt.title("Category Confusion Matrix (Test Split)")
+    plt.tight_layout()
+    plt.savefig(output_path, dpi=150)
+    plt.close()
+    return output_path
+
 
 
 def compare_hard(use_embeddings=False):
