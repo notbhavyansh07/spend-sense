@@ -67,3 +67,14 @@ Built spendsense/sms.py with regular expressions to extract transaction amount (
   - `python -m unittest discover -s tests -v` (Ran 22 tests in 4.421s, OK)
 - **Test count and result**: 22 tests run, 22 passed (`OK`)
 - **Anything untested**: None
+
+### Week 7 — Spending Forecast
+Implemented monthly spending aggregation dropping incomplete current-month logs and built five time series forecasting models: naive last-month, 3-month moving average, linear regression on monthly time index, Holt exponential smoothing with grid search over alpha and beta, and gradient boosting on differenced series using 2 lags. Implemented a 4-fold rolling backtest to select the model with lowest MAE, where 3-month moving average scored best with an MAE of Rs 9,575.89 (linear trend: Rs 12,521.97, last month: Rs 19,723.91, Holt: Rs 19,736.98, gradient boosting: Rs 29,966.43), projecting next month total spending at Rs 61,570.45. Added per-category linear forecasting and CLI table display.
+
+- **Files changed**: `spendsense/forecast.py`, `main.py`, `docs/viva/week_7.md`, `tests/test_spendsense.py`, `docs/weekly_updates.md`
+- **Commands run**:
+  - `python main.py demo` (Loaded 492 demo expenses spanning 12 months)
+  - `python main.py forecast` (Forecast: Rs 61,570.45, Selected: moving_avg_3, MAE: Rs 9,575.89)
+  - `python -m unittest discover -s tests -v` (Ran 24 tests in 5.361s, OK)
+- **Test count and result**: 24 tests run, 24 passed (`OK`)
+- **Anything untested**: None

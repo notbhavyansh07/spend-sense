@@ -7,7 +7,7 @@ import unittest
 from pathlib import Path
 
 import main
-from spendsense import categorizer, sms
+from spendsense import categorizer, forecast, sms
 from spendsense.database import ExpenseDB
 from spendsense.importer import clean_text, import_bank_csv
 from spendsense.synthetic import CATS, generate_expenses, generate_labeled
@@ -214,6 +214,37 @@ class TestSMS(unittest.TestCase):
         text = "Your OTP is 123456"
         res = sms.parse_sms(text)
         self.assertIsNone(res)
+
+
+class TestForecast(unittest.TestCase):
+    def setUp(self):
+        self.temp_dir = tempfile.TemporaryDirectory(ignore_cleanup_errors=True)
+        self.db = ExpenseDB(Path(self.temp_dir.name) / "forecast.db")
+
+    def tearDown(self):
+        self.temp_dir.cleanup()
+
+    def test_insufficient_history_returns_none(self):
+        self.db.add(500, "food", "dinner", "2026-01-15")
+        self.db.add(700, "travel", "flight", "2026-02-15")
+        res = forecast.forecast_next_month(self.db.all())
+        self.assertIsNone(res)
+
+    def test_forecast_on_demo_data(self):
+        rows = generate_expenses(months=12, seed=42)
+        self.db.add_many(rows)
+        df = self.db.all()
+        res = forecast.forecast_next_month(df)
+        self.assertIsNotNone(res)
+        self.assertIn("prediction", res)
+        self.assertGreater(res["prediction"], 0)
+        self.assertIn(res["model"], forecast.FORECAST_MODELS)
+        self.assertIn("backtest", res)
+        self.assertIn("last_month", res["backtest"])
+        self.assertIn("holt", res["backtest"])
+
+        cat_f = forecast.forecast_by_category(df)
+        self.assertGreaterEqual(len(cat_f), 5)
 
 
 if __name__ == "__main__":

@@ -4,7 +4,7 @@ import sys
 from datetime import date
 from pathlib import Path
 
-from spendsense import CATEGORIES, categorizer, importer, sms
+from spendsense import CATEGORIES, categorizer, forecast, importer, sms
 from spendsense.database import ExpenseDB
 from spendsense.synthetic import generate_expenses
 
@@ -163,15 +163,43 @@ def cmd_compare(embeddings=False):
         print(f"  {name:<22}: {val_str}")
 
 
+def cmd_forecast():
+    df = db.all()
+    res = forecast.forecast_next_month(df)
+    if not res:
+        print("At least 6 full months of historical data are required to generate a forecast.")
+        print("Tip: Load demo data first via 'python main.py demo'")
+        return
+
+    print(f"\nForecast for {res['next_month']}: Rs {res['prediction']:.2f}")
+    print(f"Selected model: {res['model']} (Backtest MAE: Rs {res['mae_model']:.2f})")
+    print(f"Baseline 3-month moving average MAE: Rs {res['mae_baseline']:.2f}")
+
+    print("\nModel Comparison (Rolling Backtest MAE):")
+    print(f"{'Model':<25} {'MAE (Rs)':<12}")
+    print("-" * 38)
+    for model_name, mae in sorted(res["backtest"].items(), key=lambda kv: (kv[1] is None, kv[1])):
+        val_str = f"Rs {mae:.2f}" if mae is not None else "N/A"
+        mark = " <-- Best" if model_name == res["model"] else ""
+        print(f"{model_name:<25} {val_str:<12}{mark}")
+
+    cat_forecasts = forecast.forecast_by_category(df)
+    if cat_forecasts:
+        print("\nForecast by Category (Linear Trend):")
+        for cat, amount in cat_forecasts.items():
+            print(f"  {cat:<15}: Rs {amount:.2f}")
+
+
 def run_menu():
     menu_options = {
         "1": ("Add expense manually", menu_add_expense),
         "2": ("Paste a bank transaction SMS", menu_paste_sms),
         "3": ("View expenses", menu_view_expenses),
         "4": ("Summary and totals", menu_summary),
-        "5": ("Fix a wrong category (feedback)", menu_fix_category),
-        "6": ("Load demo data (12 months)", menu_demo),
-        "7": ("Train category model", lambda: cmd_train(False)),
+        "5": ("Forecast next month spending", cmd_forecast),
+        "6": ("Fix a wrong category (feedback)", menu_fix_category),
+        "7": ("Load demo data (12 months)", menu_demo),
+        "8": ("Train category model", lambda: cmd_train(False)),
     }
     while True:
         print("\n=== SpendSense CLI Menu ===")
@@ -199,6 +227,7 @@ def build_parser():
 
     view_p = subparsers.add_parser("view", help="View all expenses")
     total_p = subparsers.add_parser("total", help="Show total spending")
+    subparsers.add_parser("forecast", help="Forecast next month spending")
 
     train_p = subparsers.add_parser("train", help="Train categorizer models")
     train_p.add_argument("--embeddings", action="store_true", help="Include embeddings")
@@ -234,6 +263,8 @@ def main():
         menu_view_expenses()
     elif args.command == "total":
         menu_summary()
+    elif args.command == "forecast":
+        cmd_forecast()
     elif args.command == "train":
         cmd_train(args.embeddings)
     elif args.command == "compare":
