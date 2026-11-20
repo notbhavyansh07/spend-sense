@@ -6,6 +6,9 @@ import tempfile
 import unittest
 from pathlib import Path
 
+from fastapi.testclient import TestClient
+
+import api
 import main
 from spendsense import anomaly, categorizer, forecast, sms
 from spendsense.database import ExpenseDB
@@ -267,6 +270,91 @@ class TestAnomaly(unittest.TestCase):
         ], columns=["amount", "category", "note", "spent_on"])
         flagged = anomaly.detect_anomalies(df, min_samples=20)
         self.assertTrue(flagged.empty)
+
+
+class TestAPI(unittest.TestCase):
+    def setUp(self):
+        self.temp_dir = tempfile.TemporaryDirectory(ignore_cleanup_errors=True)
+        self.test_db_path = Path(self.temp_dir.name) / "api_test.db"
+        api.db = ExpenseDB(self.test_db_path)
+        self.client = TestClient(api.app)
+
+    def tearDown(self):
+        self.temp_dir.cleanup()
+
+    def test_health(self):
+        res = self.client.get("/health")
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(res.json(), {"status": "ok"})
+
+    def test_docs_available(self):
+        res = self.client.get("/docs")
+        self.assertEqual(res.status_code, 200)
+
+    def test_expenses_crud_and_validation(self):
+        # Validation error on non-positive amount
+        bad_res = self.client.post("/expenses", json={"amount": -10, "note": "bad"})
+        self.assertEqual(bad_res.status_code, 422)
+
+        # Successful addition with auto category prediction
+        res = self.client.post("/expenses", json={"amount": 350.0, "note": "zomato dinner"})
+        self.assertEqual(res.status_code, 200)
+        data = res.json()
+        self.assertIn("id", data)
+        self.assertEqual(data["category"], "food")
+        exp_id = data["id"]
+
+        # Read list
+        list_res = self.client.get("/expenses")
+        self.assertEqual(list_res.status_code, 200)
+        self.assertEqual(len(list_res.json()), 1)
+
+        # Update category
+        put_res = self.client.put(f"/expenses/{exp_id}/category", json={"category": "entertainment"})
+        self.assertEqual(put_res.status_code, 200)
+        self.assertEqual(put_res.json(), {"ok": True})
+
+        # Delete
+        del_res = self.client.delete(f"/expenses/{exp_id}")
+        self.assertEqual(del_res.status_code, 200)
+        self.assertEqual(len(self.client.get("/expenses").json()), 0)
+
+    def test_predict_category_endpoint(self):
+        res = self.client.post("/predict-category", json={"text": "uber cab"})
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(res.json()["category"], "travel")
+        self.assertGreater(res.json()["confidence"], 0.3)
+
+    def test_parse_sms_endpoint(self):
+        sms_text = "Rs 450.00 debited from A/c XX1234 on 05-11-26 to ZOMATO. UPI Ref 123456"
+        res = self.client.post("/parse-sms", json={"text": sms_text, "save": True})
+        self.assertEqual(res.status_code, 200)
+        data = res.json()
+        self.assertEqual(data["amount"], 450.0)
+        self.assertEqual(data["merchant"], "zomato")
+        self.assertEqual(data["category"], "food")
+        self.assertIn("id", data)
+
+    def test_demo_forecast_anomalies_and_ask(self):
+        # Load demo
+        demo_res = self.client.post("/demo")
+        self.assertEqual(demo_res.status_code, 200)
+        self.assertEqual(demo_res.json()["loaded"], 12 * 41)
+
+        # Forecast
+        fc_res = self.client.get("/forecast")
+        self.assertEqual(fc_res.status_code, 200)
+        self.assertIn("prediction", fc_res.json())
+
+        # Anomalies
+        anom_res = self.client.get("/anomalies")
+        self.assertEqual(anom_res.status_code, 200)
+        self.assertIsInstance(anom_res.json(), list)
+
+        # Ask
+        ask_res = self.client.post("/ask", json={"question": "how much did I spend on food"})
+        self.assertEqual(ask_res.status_code, 200)
+        self.assertIn("answer", ask_res.json())
 
 
 if __name__ == "__main__":

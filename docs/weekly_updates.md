@@ -88,3 +88,12 @@ Implemented spendsense/anomaly.py using category-specific Isolation Forests trai
   - `python -m unittest discover -s tests -v` (Ran 26 tests in 14.947s, OK)
 - **Test count and result**: 26 tests run, 26 passed (`OK`)
 - **Anything untested**: None
+
+### Week 9 — REST API
+Built api.py with FastAPI and spendsense/service.py for data serialization. Implemented 11 HTTP endpoints covering health status (/health), expense CRUD with Pydantic validation requiring amount > 0 (/expenses), category corrections with automated feedback logging (/expenses/{id}/category), category inference (/predict-category), bank SMS parsing with optional persistence (/parse-sms), rolling backtest forecasts (/forecast), Isolation Forest anomaly records (/anomalies), natural language queries (/ask), and demo data seeding (/demo). Validated all endpoints with FastAPI TestClient across 6 dedicated test cases and verified interactive Swagger documentation generation at /docs.
+
+- **Files changed**: `api.py`, `spendsense/service.py`, `spendsense/chat.py`, `docs/viva/week_9.md`, `tests/test_spendsense.py`, `docs/weekly_updates.md`
+- **Commands run**:
+  - `python -m unittest discover -s tests -v` (Ran 32 tests in 18.404s, OK)
+- **Test count and result**: 32 tests run, 32 passed (`OK`)
+- **Anything untested**: None
