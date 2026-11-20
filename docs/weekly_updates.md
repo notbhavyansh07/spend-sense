@@ -16,3 +16,13 @@ Scaffolded repository structure, continuous integration workflow, and problem do
   - `git push -u origin week-1`
 - **Test count and result**: 5 tests run, 5 passed (`OK`)
 - **Anything untested**: GitHub Actions cloud runner execution on GitHub infrastructure
+
+### Week 2 — Data Collection and Preprocessing
+Built a synthetic expense text generator with template randomization, 10% injected typos, and 5% uppercase variations to produce a balanced 700-row training dataset (100 per category). Generated 12 months of synthetic student spending history with a 1.5% monthly upward trend and 6 planted high-value outliers. Created a hand-labeled 42-row hard evaluation set of unseen merchants, implemented a bank CSV importer with column heuristics and date normalization, and saved the category distribution plot to docs/class_counts.png.
+
+- **Files changed**: `spendsense/__init__.py`, `spendsense/database.py`, `spendsense/synthetic.py`, `spendsense/importer.py`, `data/generate_dataset.py`, `data/expenses_labeled.csv`, `data/hard_test.csv`, `docs/class_counts.png`, `docs/viva/week_2.md`, `tests/test_spendsense.py`
+- **Commands run**:
+  - `python data/generate_dataset.py`
+  - `python -m unittest discover -s tests -v`
+- **Test count and result**: 9 tests run, 9 passed (`OK`)
+- **Anything untested**: None

@@ -1,76 +1,701 @@
 text,category
-canteen samosa and chai,food
-mess lunch token,food
-maggi at night canteen,food
-zomato biryani delivery,food
-swiggy burger order,food
-tea stall biscuits,food
-shawarma roll dinner,food
-dosa at udipi restaurant,food
-dominos pizza treat,food
-groceries milk bread eggs,food
-coffee at campus cafe,food
-metro smart card recharge,travel
-auto fare to college,travel
-rapido bike ride to hostel,travel
-uber cab to railway station,travel
-bus ticket to home town,travel
-petrol for motorcycle,travel
-ola auto ride,travel
-local train monthly pass,travel
-porter tempo luggage shifting,travel
-train ticket booking irctc,travel
-airport taxi ride,travel
-semester exam fee portal,education
-photocopy lecture notes,education
-stationery notebooks pens,education
-dbms textbook purchase,education
-python machine learning course,education
-gate coaching monthly fee,education
-library overdue fine,education
-lab record files and prints,education
-scientific calculator fx991,education
-ieee student branch membership,education
-coursera certificate course,education
-netflix monthly subscription,entertainment
-pvr movie ticket weekend,entertainment
-spotify premium student plan,entertainment
-youtube premium membership,entertainment
-gaming arcade center,entertainment
-standup comedy show ticket,entertainment
-board games cafe entry,entertainment
-hotstar subscription renewal,entertainment
-cinema popcorn snack combo,entertainment
-steam sale pc game,entertainment
-music concert pass,entertainment
-hostel room electricity bill,bills
-jio mobile prepaid recharge,bills
-wifi broadband bill payment,bills
-hostel monthly mess bill,bills
-laundry service payment,bills
-room rent split transfer,bills
-drinking water can delivery,bills
-lpg gas cylinder refill,bills
-apartment maintenance share,bills
-airtel postpaid mobile bill,bills
-pharmacy fever tablets strip,health
-doctor clinic consultation fee,health
-cough syrup and paracetamol,health
-bandaid and antiseptic cream,health
-eye clinic vision test,health
-dental scaling and cleaning,health
-multivitamin capsules bottle,health
-blood test diagnostic lab,health
-fever clinic consultation,health
-pain relief spray volini,health
-gym monthly fitness pass,health
-college backpack bag,shopping
-myntra cotton casual shirt,shopping
-flipkart phone back cover,shopping
-running sports shoes,shopping
-winter hoodie jacket,shopping
-bluetooth wireless earphones,shopping
-study desk led lamp,shopping
-formal trousers interview,shopping
-stainless steel water bottle,shopping
-folding umbrella for rain,shopping
+swiggy order,food
+lunch from dhaba,food
+cage coffee,food
+zomato,food
+chaayos,food
+ice cream at zomato,food
+paid mcdonalds for breakfast,food
+swiggytcoffee,food
+dhaba chai,food
+snacks,food
+thali at starbucks,food
+kfc order,food
+lunch from blinkit,food
+breakfast at starbucks,food
+paid dhaba for paneer meal,food
+dominos order,food
+paneer meal,food
+starbucks order,food
+paneer meal from cafe,food
+paid dominos for biryani,food
+cafe order,food
+snacks from dominos,food
+breakfast at swiggy,food
+lunch,food
+canteen,food
+restaurant fruits,food
+ice cream at mcdonalds,food
+CHAI,food
+dhaba order,food
+swiggy,food
+cafe,food
+snacks at dominos,food
+cafe burger,food
+paid blinkit for ice cream,food
+ice cream at mess,food
+dominos,food
+ice cream from mess,food
+paid chaayos for groceries,food
+cafe snacks,food
+dhbba groceries,food
+mess biryani,food
+ice cream,food
+swiggy groceries,food
+fbuits,food
+paid bigbasket for sandwich,food
+paneer meal from bdinkit,food
+blinkit,food
+breakfast at kfc,food
+paneer meal aa chaayos,food
+paid bigbasket for ice cream,food
+bigbasket order,food
+biryani from mcdonalds,food
+blinkit order,food
+kfc,food
+paid mcdonalds for biryani,food
+paid chaayos for breakfast,food
+paid bigbasket tor paneer meal,food
+swiggy snacks,food
+paid swiggy for paneer meal,food
+snacks at restaurajt,food
+dominos pizza,food
+paid kfc for groceries,food
+CHAAYOS ORDER,food
+groceries at dominos,food
+FRUITS,food
+DHABA PANEER MEAL,food
+paid cafe for snacks,food
+paid starbucks for paneer meal,food
+starbucks biryani,food
+paid bigbasket for snacks,food
+dhaba,food
+breakfast from blinkit,food
+breakfast,food
+groceries,food
+paid dominos for ice cream,food
+blinkit chai,food
+pizza,food
+birymni at kfc,food
+ice cream at swiggy,food
+sandwich,food
+mcdonalds breakfast,food
+swiggy thali,food
+paid chaayos for thali,food
+KFC,food
+restaurant paneer meal,food
+fruits at swiggy,food
+chaayos order,food
+coffee from kfc,food
+pizza at zomato,food
+breakfast at dhaba,food
+restaurant order,food
+groceries at kfc,food
+dinner from zomato,food
+lunch at bigbasket,food
+biryani,food
+ice cream at blinkit,food
+ice cream from dominos,food
+chai from bigbasket,food
+starbucks,food
+mess order,food
+parking from indian oil,travel
+redbus order,travel
+fuel refill,travel
+ola,travel
+petrkl,travel
+petrol,travel
+BIKE TAXI AT UBER,travel
+paid redbus for flight booking,travel
+parking,travel
+metro auto rickshaw,travel
+rapido order,travel
+uber,travel
+uber order,travel
+cab ride,travel
+auto rickshaw,travel
+fuel refill at metro,travel
+rapido petrol,travel
+irctc,travel
+train ticket at indigo,travel
+ola order,travel
+redbus bike taxi,travel
+bus ticket,travel
+fuel refill from ola,travel
+uber auto rickshaw,travel
+indigo cab ride,travel
+flight booking,travel
+paid irctc for bus ticket,travel
+bike taxi at indian oil,travel
+indian oil auto rickshaw,travel
+auto rickshaw at redbus,travel
+paid uber for toll fee,travel
+metro order,travel
+petrol from metro,travel
+paid indian oil for fuel refill,travel
+irctc order,travel
+petrol at rapido,travel
+paid rapido for fuel refill,travel
+redbus train ticket,travel
+uber bike taxi,travel
+paid rapido for cab ride,travel
+ola flight booking,travel
+paid ola for petrol,travel
+bike taxi,travel
+irctc airport transfer,travel
+train ticket from irctc,travel
+BIKE TAXI,travel
+paid redius for parking,travel
+train zicket from redbus,travel
+uber flight booking,travel
+ola petrol,travel
+indian oil order,travel
+paid ola for train ticket,travel
+paik metro for toll fee,travel
+METRO TOLL FEE,travel
+flight booking atlindian oil,travel
+paid indian oil for parking,travel
+metro bus ticket,travel
+indian oil bus ticket,travel
+bus ticket from rapido,travel
+TOLL FEE,travel
+parking at rapido,travel
+metro,travel
+petrol at irctc,travel
+cab ride at metro,travel
+flight booking at metro,travel
+indigo,travel
+indian oil,travel
+paid metro vor airport transfer,travel
+airport transfer,travel
+bike taxi av uber,travel
+flight booking from ola,travel
+paid metro for train ticket,travel
+PARKING,travel
+fuel refill at indian oil,travel
+REDBIS,travel
+bike taxi at uber,travel
+paid irctc for bike taxi,travel
+airport transfer from redbus,travel
+rjpido order,travel
+indigo trakn ticket,travel
+paid redbus for train ticket,travel
+BUS TICKET,travel
+PAID OLA FOR AIRPORT TRANSFER,travel
+uber fuel refill,travel
+flight booking from rapido,travel
+paid uber for auto rickshaw,travel
+bus ticket from indigo,travel
+indigo order,travel
+bike taxi from rapido,travel
+auto rickshaw at irctc,travel
+toll fee from rapido,travel
+ubersorder,travel
+cab ride from redbus,travel
+ola parking,travel
+indigo bike taxi,travel
+paid indian oil for flight booking,travel
+incian oil order,travel
+paid ola for bike taxi,travel
+cab ride at redbus,travel
+paid sndigo for auto rickshaw,travel
+coursera library fine,education
+coursera,education
+paid amazon books for exam fee,education
+udemy pens,education
+udemy order,education
+stationery shop,education
+amazon books lab manual,education
+STATIONERY SHOP,education
+pythog book,education
+PRINTING AT AMAZON BOOKS,education
+stationery shop order,education
+certification from xerox shop,education
+stationery shop python book,education
+amazon books project material,education
+STATIONERY SHOP ORDER,education
+paid coursera for project material,education
+paid udemy for lab manual,education
+statixnery shop,education
+paid coursera for notebook,education
+coursera order,education
+pens from xerox shop,education
+dsa book from nptel,education
+xerox shop order,education
+notebook from stationery shop,education
+project material ct amazon books,education
+python book,education
+xerox shop,education
+stationery shop notebook,education
+UDEMY ORDER,education
+paid amazon books for printing,education
+amazon books notebook,education
+paid nptel for library fine,education
+notebook from amazon books,education
+paid amazon books for library fine,education
+nptel,education
+exam fee,education
+library fine at nptel,education
+exam fee from coursera,education
+pensqfrom coursera,education
+certificatiyn at nptel,education
+PENS AT XEROX SHOP,education
+paid nptel for online course,education
+dsa book at nptel,education
+online course at stationery shop,education
+printing,education
+online course,education
+paid udemy for library fine,education
+nptel certification,education
+printing at coursera,education
+notebook at stationery shop,education
+paid coursera for lab manual,education
+pens at coursepa,education
+DSA BOOK FROM NPTEL,education
+udemy printing,education
+notebook from umazon books,education
+notebook,education
+udemy,education
+PENS FROM NPTEL,education
+xerox shop exam fre,education
+exam fee at udemy,education
+xerox shop exam fee,education
+paid nptel for pens,education
+exam fee from udemy,education
+dsa book at xerox shop,education
+EXAM FEE FROM AMAZON BOOKS,education
+amazon books order,education
+dsa book,education
+dsa book from stationery shop,education
+paid udemy for lab mfnual,education
+paid udemy for notebook,education
+lab manual,education
+coursera project material,education
+online course from udemy,education
+paid amazon books for dsa book,education
+amazon books,education
+library fine at amazon books,education
+nptel order,education
+coursera pens,education
+paid xerox shop for project material,education
+notebook at xerox shop,education
+stationery shop dsa book,education
+library fine at xerox shop,education
+certification from stationery shop,education
+xerox shop pens,education
+paid udemy for printing,education
+paid coursera for library fine,education
+ACAZON BOOKS,education
+library fjne,education
+paid stationery shop for online course,education
+paid stationery shop for notebook,education
+paid nptel for exam fee,education
+pens,education
+project material from coursera,education
+library fine,education
+udemy lab manual,education
+pasd stationery shop for exam fee,education
+paid xerox shop for printing,education
+paid xerox shop for library fine,education
+stationery shop exam fee,education
+paid coursera for online course,education
+netflix subscription,entertainment
+ott recharge,entertainment
+bowling from bookmyshow,entertainment
+youtube order,entertainment
+prime video,entertainment
+bowling at netflix,entertainment
+concert pass,entertainment
+steam order,entertainment
+gaming cafe from prime video,entertainment
+prime video movie tickets,entertainment
+gaming cafe,entertainment
+ott recharge at prime video,entertainment
+steam premium plan,entertainment
+hotstar order,entertainment
+bowling,entertainment
+concert pass at steam,entertainment
+arcade from bookmyshow,entertainment
+paid youtube for concert pass,entertainment
+hotstar,entertainment
+conlert pass at spotify,entertainment
+bookmyshow order,entertainment
+paid prime video for concert pass,entertainment
+spotihy,entertainment
+netflix gaming cafe,entertainment
+youtube ofder,entertainment
+game purchase,entertainment
+paid steam for subscription,entertainment
+spotify,entertainment
+spotify gaming cafe,entertainment
+youtube gaming cafe,entertainment
+YOUTUBE ORDER,entertainment
+arcade,entertainment
+arcade from youtube,entertainment
+bookmyshow premium plan,entertainment
+spotify order,entertainment
+steam,entertainment
+gaming cafe at steam,entertainment
+hotstar movie tickets,entertainment
+paid spotify for subscription,entertainment
+bowling at bookmyshow,entertainment
+bookmyshow bowling,entertainment
+hotstar concert pass,entertainment
+paid bookmyshow for game purchase,entertainment
+bowling from hotstar,entertainment
+movie tickets at spotify,entertainment
+paid netflix for mqvie tickets,entertainment
+steam game purchase,entertainment
+subscription,entertainment
+spotifw order,entertainment
+netflix ott refharge,entertainment
+spotify arcade,entertainment
+subscription from youtube,entertainment
+ott recharge from spotify,entertainment
+youtube ordnr,entertainment
+spotify game purchase,entertainment
+prime video order,entertainment
+game purchase at bookmyshow,entertainment
+bowling at prime video,entertainment
+paid hotstar for premium plan,entertainment
+concert pass at spotify,entertainment
+netflix order,entertainment
+youtubevorder,entertainment
+youtube movie tickets,entertainment
+paid bookmyshow for subscription,entertainment
+gaming cafe at bookmyshow,entertainment
+paid bookmyshow for bowling,entertainment
+youtube ott recharge,entertainment
+premium plan from steam,entertainment
+premium plan,entertainment
+youtube,entertainment
+paid spotify for premium plan,entertainment
+movie tickets at youtube,entertainment
+gaming cafe at netflix,entertainment
+STEAM ORDER,entertainment
+prime vidxo,entertainment
+paid netflix for arcade,entertainment
+arcade from spotify,entertainment
+movie tickets at hotstar,entertainment
+steam subscrimtion,entertainment
+steam subscription,entertainment
+bowling at hotstar,entertainment
+prime video subscription,entertainment
+BOOKMYSHOW ORDER,entertainment
+subscription at bookmyshow,entertainment
+gaming cafe at youtube,entertainment
+prime video bohling,entertainment
+paid prime video for gaming cafe,entertainment
+youtube concert pass,entertainment
+gaming cafe from steam,entertainment
+bookmyshow ott recharge,entertainment
+premium plan from netflix,entertainment
+hotrtar,entertainment
+YOUTUBE,entertainment
+movie tickets,entertainment
+arcade from prime video,entertainment
+concert pass from bookmyshow,entertainment
+concert pass from hotstar,entertainment
+bookmyshow concert pass,entertainment
+hotstar bowling,entertainment
+ott recharge at bookmyshow,entertainment
+internet bill at act fibernet,bills
+airtel order,bills
+paid vi for pg rent,bills
+room rent from vi,bills
+paid jio for internet bill,bills
+laundry from acw fibernet,bills
+electricity bill at vi,bills
+dth recharge,bills
+paid act fibernet for wifi bill,bills
+bsnl internet bill,bills
+act fibernet,bills
+paid act fibernet for laundry,bills
+airtel pg rent,bills
+jio,bills
+act fibernet order,bills
+electricihy bill at bsnl,bills
+tata power,bills
+paid bsnl for dth recharge,bills
+airtel,bills
+paid bsnl for electricity bill,bills
+water bill from vi,bills
+bsnl,bills
+electricityubill at act fibernet,bills
+hostel rent at airtel,bills
+paid tata power for room rent,bills
+wifi bill,bills
+internet bill,bills
+mobile recharge,bills
+electricity bill at act fibernet,bills
+paid act fibernet for dth recharge,bills
+vi gas cylinder,bills
+water bill at act fibernet,bills
+wifi bill from vi,bills
+room rent from tata power,bills
+water bill from bsnl,bills
+hostel rent,bills
+bsnl order,bills
+water birl at airtel,bills
+internet bill at bsnl,bills
+vi,bills
+act fibernet dth recharge,bills
+act fibernet pg rent,bills
+bsnl water bill,bills
+vi order,bills
+hostel rent from airtel,bills
+paid act fibernet for water bill,bills
+pg rent at tata power,bills
+mobile recharge at bsnl,bills
+wifi bill from act fibernet,bills
+pg rent at airtel,bills
+jio order,bills
+PAID BSNL FOR DTH RECHARGE,bills
+room rent,bills
+paid vi for gas cylinder,bills
+gas cylinder at bsnl,bills
+jio pg rent,bills
+airtel dth recharge,bills
+paid act fibernet for pg rent,bills
+paid act fibernet for hostel rent,bills
+jio hostel rent,bills
+PG RENT FROM TATA POWER,bills
+paid jio for room rent,bills
+electricity bill from bsnl,bills
+paid vi for water bill,bills
+pg rent,bills
+airtel electricity bill,bills
+internet bill from tata power,bills
+mobile recharge at act fibernet,bills
+paid airtel for laundry,bills
+pgprent,bills
+pg rent from bsnl,bills
+eleatricity bill from bsnl,bills
+jio room rent,bills
+act fibernet laundry,bills
+vi electricity bill,bills
+laundry at airtel,bills
+pg rent at act fibernet,bills
+hontel rent,bills
+AIRWEL ORDER,bills
+laundry,bills
+paid airtel for gas cylinder,bills
+PAID ACT FIBERNET FOR ELECTRICITY BILL,bills
+water bill at bsnl,bills
+internet bill at jio,bills
+tata power ordar,bills
+laundry at jio,bills
+tata power pg rent,bills
+mobile recharge at tata power,bills
+water bill,bills
+vi hostel rent,bills
+tata power order,bills
+bsnl mobile recharge,bills
+MOBILE RECHARGE AT ACT FIBERNET,bills
+dth recharge from bsnl,bills
+water biql from act fibernet,bills
+airtel wifi bill,bills
+wifi bill from jio,bills
+tata power gas cylinder,bills
+paid bsnl for water bill,bills
+airtel gas cylinder,bills
+paid netmeis for protein powder,health
+dental visit from apollo,health
+medplus,health
+medicinee from apollo,health
+doctor consultation,health
+medicines at apollo,health
+NETMEDD ORDER,health
+pharmacy,health
+netmeds ordnr,health
+health checkup from medplus,health
+cult fit gym membership,health
+netmeds,health
+cult fit order,health
+dental visit at apollo,health
+PHARMHCY,health
+medicines at pharmeasy,health
+paid cult fit for gym membership,health
+medplus order,health
+apollo order,health
+VITAMINS AT 1MG,health
+pharmeasy order,health
+protein powder at netmeds,health
+APOLLO GYM MEMBERSHIP,health
+vitamins,health
+pharmacy from pharmeasy,health
+paid apollo for medicines,health
+protein powder from apollo,health
+paid 1mg for dental visit,health
+paid medplus for pharmacy,health
+netmeds order,health
+health checkup from netmeds,health
+medicines from 1mg,health
+medicines,health
+gym membership at cult fit,health
+paid medplus for doctor consultation,health
+pharheasy order,health
+PAID PHARMEASY FOR DOCTOR CONSULTATION,health
+dental visit,health
+gym membership,health
+health chdckup at apollo,health
+pharmacy from netmeds,health
+pharmeasy eye test,health
+dental visit from medplus,health
+apollo dental visit,health
+vitjmins from apollo,health
+CULT FIT ORDER,health
+health checkup from 1mg,health
+pharmeasy dental visit,health
+paid apollo for protein powder,health
+doctor consuztation from 1mg,health
+dental visit at cult fit,health
+medicines at 1mg,health
+pharmacy at cult fit,health
+gym membership from medplus,health
+health checkup from cult fit,health
+doctor consultation at apollo,health
+paid pharmeasy for protein powder,health
+protein powder at 1mg,health
+doctor consultation from medplus,health
+pharmeasy protein powder,health
+paid netmeds for eye test,health
+dental visit from pharmeasy,health
+paid apollo for vitamins,health
+paid netmeds for doctor consultation,health
+paid 1mg for eye test,health
+eye test at netmeds,health
+protein powder at apollo,health
+apollo,health
+gyl membership at apollo,health
+paid pharmeasy for eye test,health
+1mg medicines,health
+eye test,health
+doctor consultation from pharmeasy,health
+gym membership from cult fit,health
+medicines from cult fit,health
+paid 1mg for health checkup,health
+paid netmeds for health checkup,health
+CULT FIT,health
+paid 1mg for doctor consultation,health
+paid 1mg for vitamins,health
+1mg order,health
+1mg,health
+dental visit at pharmeasy,health
+paid cult fit for health checkup,health
+1mg doctor consultation,health
+1mg dental visit,health
+pharmacy at medplus,health
+eye test at apollo,health
+paid 1mg gor medicines,health
+pharmacy from cult fit,health
+medplus dental visit,health
+mexicines,health
+medicines from apollo,health
+eye test from pharmeasy,health
+medicines at netmeds,health
+medicines from medplus,health
+paid 1mg for medicines,health
+MEDICINES AT CULT FIT,health
+1mn medicines,health
+cult fit health checkup,health
+croma ovder,shopping
+myntra,shopping
+hoodie at amazon,shopping
+nykaa shoes,shopping
+hoodie at myntra,shopping
+headphongs,shopping
+backpack,shopping
+water bottle at decathlon,shopping
+shoes at decathlon,shopping
+paid croma for backpack,shopping
+paid abio for tshirt,shopping
+paid nykaa for water bottle,shopping
+nykva tshirt,shopping
+paid myntra for phone cover,shopping
+amazon order,shopping
+phone cover,shopping
+watch at ajio,shopping
+flipkart tshirt,shopping
+ajio keyboard,shopping
+keyboard,shopping
+nykaa water bottle,shopping
+phone cover from ajio,shopping
+AMAZON JEANS,shopping
+hoodie at croma,shopping
+flipkart,shopping
+cromp order,shopping
+croma order,shopping
+amazon,shopping
+phone cover at ajio,shopping
+phone cover from amazon,shopping
+nykaa phone cover,shopping
+WATER BNTTLE,shopping
+myntra order,shopping
+charger,shopping
+charger at ajio,shopping
+water bottle,shopping
+jeans at croma,shopping
+amazon headphones,shopping
+watch from amazon,shopping
+charger from croma,shopping
+nykaa order,shopping
+hoodie,shopping
+keyboard from croma,shopping
+ajio water bottle,shopping
+ajio,shopping
+paid ajio for headphones,shopping
+decathlon order,shopping
+paid croma for hoodie,shopping
+croma,shopping
+flipkart order,shopping
+nykaa charger,shopping
+agio headphones,shopping
+jeans at flipkart,shopping
+croma jeans,shopping
+paid nykaa for phone cover,shopping
+JEANS FROM DECATHLON,shopping
+watch,shopping
+myntrg order,shopping
+phone cover at nykaa,shopping
+HOODIE FROM CROMA,shopping
+paid decathlon for jeans,shopping
+paid amazon for charger,shopping
+flipkart charger,shopping
+hoodie from flipkfrt,shopping
+hoodie at decathlon,shopping
+tshirt at croma,shopping
+croma charger,shopping
+ajio jeans,shopping
+nykaa,shopping
+AJIO,shopping
+hoodie from nykaa,shopping
+water bottle from croma,shopping
+shoes,shopping
+watch at croma,shopping
+croma brder,shopping
+flipkart jeans,shopping
+watch from myntra,shopping
+tshirt,shopping
+CROMA KEYBOASD,shopping
+charger at amazon,shopping
+ajio headphones,shopping
+paid croma for water bottle,shopping
+amazon keyboard,shopping
+myntra backpack,shopping
+paid flipkart for watch,shopping
+headphones from flipkart,shopping
+headphones from amazon,shopping
+nykaa hoodie,shopping
+paid croma for shoes,shopping
+phone cover from myntra,shopping
+paid croma for keyboard,shopping
+watch at myntra,shopping
+water bottle at flipkart,shopping
+paid nykaa for jeans,shopping
+backpack from decathlon,shopping
+croma shoes,shopping
+hoodie from amazon,shopping
+paid ajio for backpack,shopping
+headphones at myntra,shopping
+hozdie,shopping
