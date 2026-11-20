@@ -97,3 +97,12 @@ Built api.py with FastAPI and spendsense/service.py for data serialization. Impl
   - `python -m unittest discover -s tests -v` (Ran 32 tests in 18.404s, OK)
 - **Test count and result**: 32 tests run, 32 passed (`OK`)
 - **Anything untested**: None
+
+### Week 10 — Dashboard
+Built app.py using Streamlit featuring dual LocalBackend and RemoteBackend abstractions so the interface functions either directly in-process or as an HTTP client to the FastAPI backend when API_URL is set. Implemented interactive sidebar forms for manual expense logging with live category suggestions, a bank SMS paste-and-extract tab, and a demo seeding button. Main dashboard renders metric cards, category bar chart, monthly spending trend line chart, rolling backtest forecast comparison table, natural language question answering box, and anomaly data table. Handled cold-start deployment with automatic model training on first run, and documented Streamlit Community Cloud and Docker steps in docs/DEPLOY.md (marked cloud deployment untested).
+
+- **Files changed**: `app.py`, `docs/DEPLOY.md`, `docs/viva/week_10.md`, `tests/test_spendsense.py`, `docs/weekly_updates.md`
+- **Commands run**:
+  - `python -m unittest discover -s tests -v` (Ran 33 tests in 18.710s, OK)
+- **Test count and result**: 33 tests run, 33 passed (`OK`)
+- **Anything untested**: Live Streamlit Community Cloud deployment (untested, documented based on specification)

@@ -10,7 +10,7 @@ from fastapi.testclient import TestClient
 
 import api
 import main
-from spendsense import anomaly, categorizer, forecast, sms
+from spendsense import anomaly, categorizer, forecast, service, sms
 from spendsense.database import ExpenseDB
 from spendsense.importer import clean_text, import_bank_csv
 from spendsense.synthetic import CATS, generate_expenses, generate_labeled
@@ -355,6 +355,39 @@ class TestAPI(unittest.TestCase):
         ask_res = self.client.post("/ask", json={"question": "how much did I spend on food"})
         self.assertEqual(ask_res.status_code, 200)
         self.assertIn("answer", ask_res.json())
+
+
+class TestServiceLayer(unittest.TestCase):
+    def setUp(self):
+        self.temp_dir = tempfile.TemporaryDirectory(ignore_cleanup_errors=True)
+        self.db = ExpenseDB(Path(self.temp_dir.name) / "service_test.db")
+
+    def tearDown(self):
+        self.temp_dir.cleanup()
+
+    def test_service_records_and_summaries(self):
+        self.assertEqual(service.df_records(self.db.all()), [])
+        self.assertIsNone(service.forecast_summary(self.db.all()))
+        self.assertEqual(service.anomaly_records(self.db.all()), [])
+
+        self.db.add(250.0, "food", "lunch", "2026-11-20")
+        records = service.df_records(self.db.all())
+        self.assertEqual(len(records), 1)
+        self.assertEqual(records[0]["amount"], 250.0)
+        self.assertEqual(records[0]["spent_on"], "2026-11-20")
+
+        # With demo data
+        self.db.clear()
+        self.db.add_many(generate_expenses(months=12, seed=42))
+        f_summary = service.forecast_summary(self.db.all())
+        self.assertIsNotNone(f_summary)
+        self.assertIn("next_month", f_summary)
+        self.assertIn("prediction", f_summary)
+        self.assertIn("by_category", f_summary)
+
+        anom = service.anomaly_records(self.db.all())
+        self.assertIsInstance(anom, list)
+        self.assertGreater(len(anom), 0)
 
 
 if __name__ == "__main__":
