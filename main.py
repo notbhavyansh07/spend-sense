@@ -4,7 +4,7 @@ import sys
 from datetime import date
 from pathlib import Path
 
-from spendsense import CATEGORIES, categorizer, forecast, importer, sms
+from spendsense import CATEGORIES, anomaly, categorizer, forecast, importer, sms
 from spendsense.database import ExpenseDB
 from spendsense.synthetic import generate_expenses
 
@@ -190,6 +190,29 @@ def cmd_forecast():
             print(f"  {cat:<15}: Rs {amount:.2f}")
 
 
+def cmd_anomalies():
+    df = db.all()
+    if df.empty:
+        print("No expenses recorded.")
+        return
+    flagged = anomaly.detect_anomalies(df)
+    if flagged.empty:
+        print("No unusual expenses flagged across categories.")
+        return
+    print(f"\nFlagged {len(flagged)} Unusually Large Expenses:")
+    print(f"{'ID':<5} {'Date':<12} {'Category':<15} {'Amount (Rs)':<12} {'Note'}")
+    print("-" * 65)
+    for _, row in flagged.iterrows():
+        spent_str = (
+            row["spent_on"].strftime("%Y-%m-%d")
+            if hasattr(row["spent_on"], "strftime")
+            else str(row["spent_on"])
+        )
+        print(
+            f"{row['id']:<5} {spent_str:<12} {row['category']:<15} {row['amount']:<12.2f} {row['note'] or ''}"
+        )
+
+
 def run_menu():
     menu_options = {
         "1": ("Add expense manually", menu_add_expense),
@@ -197,9 +220,10 @@ def run_menu():
         "3": ("View expenses", menu_view_expenses),
         "4": ("Summary and totals", menu_summary),
         "5": ("Forecast next month spending", cmd_forecast),
-        "6": ("Fix a wrong category (feedback)", menu_fix_category),
-        "7": ("Load demo data (12 months)", menu_demo),
-        "8": ("Train category model", lambda: cmd_train(False)),
+        "6": ("Find unusual expenses (anomalies)", cmd_anomalies),
+        "7": ("Fix a wrong category (feedback)", menu_fix_category),
+        "8": ("Load demo data (12 months)", menu_demo),
+        "9": ("Train category model", lambda: cmd_train(False)),
     }
     while True:
         print("\n=== SpendSense CLI Menu ===")
@@ -228,6 +252,7 @@ def build_parser():
     view_p = subparsers.add_parser("view", help="View all expenses")
     total_p = subparsers.add_parser("total", help="Show total spending")
     subparsers.add_parser("forecast", help="Forecast next month spending")
+    subparsers.add_parser("anomalies", help="Detect unusually large expenses")
 
     train_p = subparsers.add_parser("train", help="Train categorizer models")
     train_p.add_argument("--embeddings", action="store_true", help="Include embeddings")
@@ -265,6 +290,8 @@ def main():
         menu_summary()
     elif args.command == "forecast":
         cmd_forecast()
+    elif args.command == "anomalies":
+        cmd_anomalies()
     elif args.command == "train":
         cmd_train(args.embeddings)
     elif args.command == "compare":

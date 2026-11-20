@@ -7,7 +7,7 @@ import unittest
 from pathlib import Path
 
 import main
-from spendsense import categorizer, forecast, sms
+from spendsense import anomaly, categorizer, forecast, sms
 from spendsense.database import ExpenseDB
 from spendsense.importer import clean_text, import_bank_csv
 from spendsense.synthetic import CATS, generate_expenses, generate_labeled
@@ -245,6 +245,28 @@ class TestForecast(unittest.TestCase):
 
         cat_f = forecast.forecast_by_category(df)
         self.assertGreaterEqual(len(cat_f), 5)
+
+
+class TestAnomaly(unittest.TestCase):
+    def test_anomaly_detection_with_planted_outliers(self):
+        rows = generate_expenses(months=12, seed=42)
+        import pandas as pd
+        df = pd.DataFrame(rows, columns=["amount", "category", "note", "spent_on"])
+        flagged = anomaly.detect_anomalies(df, contamination=0.03, min_samples=20)
+        self.assertFalse(flagged.empty)
+        # Verify that all flagged expenses are strictly above their category median
+        for cat, group in flagged.groupby("category"):
+            median_val = df[df["category"] == cat]["amount"].median()
+            self.assertTrue((group["amount"] > median_val).all())
+
+    def test_small_category_skipped(self):
+        import pandas as pd
+        df = pd.DataFrame([
+            [100, "rare_cat", "test", "2026-01-01"],
+            [200, "rare_cat", "test", "2026-01-02"],
+        ], columns=["amount", "category", "note", "spent_on"])
+        flagged = anomaly.detect_anomalies(df, min_samples=20)
+        self.assertTrue(flagged.empty)
 
 
 if __name__ == "__main__":

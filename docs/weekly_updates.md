@@ -78,3 +78,13 @@ Implemented monthly spending aggregation dropping incomplete current-month logs 
   - `python -m unittest discover -s tests -v` (Ran 24 tests in 5.361s, OK)
 - **Test count and result**: 24 tests run, 24 passed (`OK`)
 - **Anything untested**: None
+
+### Week 8 — Anomaly Detection
+Implemented spendsense/anomaly.py using category-specific Isolation Forests trained on log(1 + amount) with contamination=0.03, skipping sparse categories with fewer than 20 records and retaining only outlier flags strictly above each category's median amount. Tested against the 12-month synthetic history containing 6 planted high-value outliers: the model successfully flagged 4 of the 6 planted outliers, while flagging 2 legitimate expenses as false alarms (total 6 expenses flagged). Added an anomalies subcommand to the CLI and integrated anomaly detection into the interactive terminal menu.
+
+- **Files changed**: `spendsense/anomaly.py`, `main.py`, `docs/viva/week_8.md`, `tests/test_spendsense.py`, `docs/weekly_updates.md`
+- **Commands run**:
+  - `python main.py anomalies` (Flagged 6 expenses, including 4 planted outliers and 2 false alarms)
+  - `python -m unittest discover -s tests -v` (Ran 26 tests in 14.947s, OK)
+- **Test count and result**: 26 tests run, 26 passed (`OK`)
+- **Anything untested**: None
