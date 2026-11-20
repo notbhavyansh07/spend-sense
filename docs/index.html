@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>SpendSense Prototype</title>
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+--bg:#f6f7fb;--card:#fff;--tx:#1b1f2a;--mut:#6b7280;--ac:#4f46e5;--bd:#e5e7eb;--warn:#b45309;--warnbg:#fef3c7;color-scheme:light;
+--c-food:#f59e0b;--c-travel:#0ea5e9;--c-education:#8b5cf6;--c-entertainment:#ec4899;--c-bills:#64748b;--c-health:#10b981;--c-shopping:#ef4444;--c-other:#9ca3af}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1117;--card:#181b24;--tx:#e8eaf0;--mut:#9aa3b2;--ac:#818cf8;--bd:#2a2f3c;--warn:#fbbf24;--warnbg:#3a2f12;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0f1117;--card:#181b24;--tx:#e8eaf0;--mut:#9aa3b2;--ac:#818cf8;--bd:#2a2f3c;--warn:#fbbf24;--warnbg:#3a2f12;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;line-height:1.45}
+main{max-width:1000px;margin:0 auto;padding:16px}
+h1{font-size:1.4rem;margin:4px 0}h2{font-size:1rem;margin:0 0 10px}
+.sub{color:var(--mut);font-size:.85rem;margin:0 0 14px}
+.grid{display:grid;gap:12px}.g3{grid-template-columns:repeat(auto-fit,minmax(170px,1fr))}.g2{grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:14px}
+.m .v{font-size:1.5rem;font-weight:700}.m .l{color:var(--mut);font-size:.8rem}
+input,select,button,textarea{font:inherit;padding:8px 10px;border-radius:8px;border:1px solid var(--bd);background:var(--bg);color:var(--tx);width:100%}
+button{background:var(--ac);color:#fff;border:0;cursor:pointer;font-weight:600}button.ghost{background:transparent;color:var(--ac);border:1px solid var(--ac)}
+.f{display:grid;gap:8px}.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.chip{width:auto;padding:3px 9px;font-size:.78rem;background:transparent;color:var(--mut);border:1px solid var(--bd);font-weight:400}
+.sug{min-height:1.4em;font-size:.85rem}.badge{display:inline-block;padding:1px 8px;border-radius:99px;color:#fff;font-size:.78rem}
+.row{display:grid;grid-template-columns:96px 1fr 70px;gap:8px;align-items:center;margin:6px 0;font-size:.85rem}
+.track{background:var(--bd);height:10px;border-radius:6px;overflow:hidden}.fill{height:100%}
+.val{text-align:right;color:var(--mut)}
+.scroll{overflow-x:auto}table{width:100%;border-collapse:collapse;font-size:.85rem}
+th,td{text-align:left;padding:6px 8px;border-bottom:1px solid var(--bd);white-space:nowrap}th{color:var(--mut);font-weight:500}
+.warn{background:var(--warnbg);color:var(--warn);border-radius:8px;padding:6px 10px;margin:6px 0;font-size:.85rem}
+svg{width:100%;height:auto;display:block}svg text{fill:var(--mut);font-size:10px}
+.ln{stroke:var(--ac);fill:none;stroke-width:2.5}.fc{stroke:var(--ac);fill:none;stroke-width:2.5;stroke-dasharray:5 4}
+.dot{fill:var(--ac)}.top{display:flex;justify-content:space-between;align-items:center;gap:10px}.top button{width:auto}
+.row2{display:flex;gap:8px;align-items:center;padding:6px 0;border-bottom:1px solid var(--bd);font-size:.85rem}.row2 input{width:auto}.tag{margin-left:auto;color:var(--mut);font-size:.75rem;text-align:right}
+#toast{color:var(--ac);font-size:.85rem;min-height:1.2em}
+</style>
+</head>
+<body>
+<main>
+<div class="top"><div><h1>SpendSense</h1><p class="sub">Live demo. The category model trains in your browser, and your expenses are saved on this device.</p></div><button class="ghost" id="reset">Reset demo</button></div>
+
+<div class="grid g3" style="margin-bottom:12px">
+<div class="card m"><div class="v" id="mTot">–</div><div class="l">Total spent (12 months + new)</div></div>
+<div class="card m"><div class="v" id="mFc">–</div><div class="l" id="mFcL">Forecast</div></div>
+<div class="card m"><div class="v" id="mAn">–</div><div class="l">Unusual expenses flagged</div></div>
+</div>
+
+<div class="grid g2" style="margin-bottom:12px">
+<div class="card"><h2>Add expense</h2>
+<div class="f">
+<input id="desc" placeholder="Describe it, e.g. zomato dinner" autocomplete="off">
+<div class="sug" id="sug">Type a description and I’ll guess the category.</div>
+<input id="amt" type="number" min="1" placeholder="Amount (₹)">
+<select id="cat"></select>
+<button id="save">Save expense</button><div id="toast"></div></div>
+<div class="chips" id="chips"></div></div>
+<div class="card"><h2>Spending by category</h2><div id="bars"></div></div>
+</div>
+
+<div class="grid g2" style="margin-bottom:12px">
+<div class="card"><h2>Paste a bank SMS</h2><div class="f"><textarea id="smsIn" rows="3" placeholder="Paste a bank SMS here"></textarea><div id="smsOut" class="sug"></div><button id="smsSave" style="display:none">Save this expense</button></div><div class="chips"><button class="chip" id="smsEx">Try a sample SMS</button></div></div>
+<div class="card"><h2>Ask about your spending</h2><div class="f"><input id="askIn" placeholder="e.g. how much did I spend on food last month?"><button id="askBtn">Ask</button><div id="askOut" class="sug" style="white-space:pre-line"></div></div><div class="chips" id="askChips"></div></div>
+</div>
+<div class="card" style="margin-bottom:12px"><h2>Monthly trend &amp; forecast</h2><svg id="chart" viewBox="0 0 600 210" role="img" aria-label="Monthly spending trend with forecast"></svg>
+<p class="sub" style="margin:6px 0 0">Solid line: actual monthly totals. Dashed: forecast from the best model for the current month.</p></div>
+
+<div class="card" style="margin-bottom:12px"><h2>Category model, trained in your browser</h2><div id="mlInfo"></div></div>
+<div class="card" style="margin-bottom:12px"><h2>Forecast models compared</h2><div class="scroll"><table><thead><tr><th>Model</th><th>Average error on the last 4 months</th></tr></thead><tbody id="cmp"></tbody></table></div><p class="sub" style="margin:6px 0 0">Each model predicts the last 4 months using only earlier months. The one with the lowest error makes the forecast.</p></div>
+<div class="grid g2">
+<div class="card"><h2>Unusual expenses</h2><div id="anom"></div></div>
+<div class="card"><h2>Recent expenses</h2><div class="scroll"><table><thead><tr><th>Date</th><th>Note</th><th>Category</th><th>₹</th></tr></thead><tbody id="rec"></tbody></table></div></div>
+</div>
+<div class="card" style="margin-top:12px"><h2>12-week plan</h2><div id="plan"></div></div>
+<p class="sub" style="margin-top:14px">This is a browser version of the Python project. The category model is Naive Bayes trained here on generated data, the forecast picks the best of four simple models, and the outlier check is a z-score. The Python project also has the SVM, Isolation Forest, SQLite database and API.</p>
+</main>
+<script>
+const G={food:["zomato,swiggy,dominos,kfc,mcdonalds,starbucks,chaayos,canteen,mess,cafe,restaurant,dhaba,bigbasket,blinkit","dinner,lunch,breakfast,biryani,pizza,burger,coffee,chai,snacks,thali,groceries,fruits,ice cream,sandwich,paneer meal"],
+travel:["uber,ola,rapido,irctc,redbus,indigo,metro,indian oil","cab ride,bus ticket,train ticket,petrol,fuel refill,auto rickshaw,flight booking,parking,toll fee,bike taxi,airport transfer"],
+education:["udemy,coursera,amazon books,stationery shop,xerox shop,nptel","python book,notebook,pens,online course,printing,exam fee,lab manual,dsa book,certification,project material,library fine"],
+entertainment:["netflix,spotify,bookmyshow,hotstar,prime video,steam,youtube","subscription,movie tickets,premium plan,game purchase,concert pass,bowling,gaming cafe,ott recharge,arcade"],
+bills:["jio,airtel,vi,bsnl,tata power,act fibernet","mobile recharge,electricity bill,wifi bill,hostel rent,water bill,gas cylinder,room rent,dth recharge,laundry,internet bill,pg rent"],
+health:["apollo,medplus,pharmeasy,netmeds,cult fit,1mg","medicines,doctor consultation,pharmacy,gym membership,health checkup,vitamins,dental visit,eye test,protein powder"],
+shopping:["amazon,flipkart,myntra,ajio,decathlon,croma,nykaa","tshirt,shoes,headphones,backpack,jeans,charger,watch,phone cover,hoodie,keyboard,water bottle"]};
+const GEN={};for(const c in G)GEN[c]=[G[c][0].split(","),G[c][1].split(",")];
+const CATS={};for(const c in GEN)CATS[c]=[...GEN[c][0],...GEN[c][1]];
+const HARD=`dmart monthly groceries,food
+paytm tea stall,food
+bhaiya ke samose,food
+namaste cafe lunch,food
+rolls and juice,food
+tiffin service,food
+porter tempo shifting,travel
+yatri sathi cab,travel
+auto to college,travel
+bike service petrol,travel
+namma metro recharge,travel
+ksrtc bus pass,travel
+ieee membership,education
+gate coaching fee,education
+leetcode premium,education
+printout of assignment,education
+arduino kit for project,education
+reference book dbms,education
+inox tickets,entertainment
+pvr weekend,entertainment
+bgmi royale pass,entertainment
+sonyliv plan,entertainment
+zee5 renewal,entertainment
+bowling and arcade night,entertainment
+bescom payment,bills
+vodafone idea recharge,bills
+broadband renewal,bills
+gas booking,bills
+society maintenance,bills
+bsnl fiber,bills
+dr sharma clinic,health
+tablet strip purchase,health
+physio session,health
+blood test lab,health
+cult gym pass,health
+dolo and cough syrup,health
+decathlon trekking shoes,shopping
+boat earbuds,shopping
+snitch shirt,shopping
+mamaearth face wash,shopping
+puma sneakers,shopping
+ikea study lamp,shopping`;
+const R={food:[60,600,18],travel:[50,1500,8],education:[100,3000,2],entertainment:[100,1200,3],bills:[200,2500,3],health:[100,2000,2],shopping:[300,5000,3]};
+const $=id=>document.getElementById(id);
+const fmt=n=>"₹"+Math.round(n).toLocaleString("en-IN");
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const mon=(y,m)=>new Date(y,m,1).toLocaleString("en",{month:"short"});
+function rng(a){return()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+let data=[],nid=1,manual=false;
+
+function seed(){
+  data=[];nid=1;const r=rng(7),now=new Date();
+  for(let m=12;m>=1;m--){const y=now.getFullYear(),mo=now.getMonth()-m,tr=1+0.015*(12-m);
+    for(const c in R){const [lo,hi,n]=R[c],w=CATS[c];
+      for(let i=0;i<n;i++)data.push({id:nid++,amt:Math.round((lo+r()*(hi-lo))*tr*.6),cat:c,
+        note:w[Math.floor(r()*w.length)]+" "+w[Math.floor(r()*w.length)],date:new Date(y,mo,1+Math.floor(r()*28))});}}
+  for(let i=0;i<6;i++){const b=data[Math.floor(r()*data.length)];data.push({id:nid++,amt:Math.round(b.amt*(6+r()*4)),cat:b.cat,note:b.note,date:b.date});}
+}
+
+function predict(text){
+  const gs=grams(text);if(!gs.length||!NB)return[null,0];
+  const sc=nbScores(NB,text),ks=Object.keys(sc),mx=Math.max(...ks.map(k=>sc[k])),sd=Math.sqrt(gs.length);
+  let z=0;const e={};ks.forEach(k=>{e[k]=Math.exp((sc[k]-mx)/sd);z+=e[k];});
+  const best=ks.sort((a,b)=>sc[b]-sc[a])[0];return[best,e[best]/z];
+}
+
+function forecast(){
+  const now=new Date(),ck=now.getFullYear()*12+now.getMonth(),t={};
+  data.forEach(e=>{const k=e.date.getFullYear()*12+e.date.getMonth();if(k<ck)t[k]=(t[k]||0)+e.amt;});
+  const keys=Object.keys(t).map(Number).sort((a,b)=>a-b),y=keys.map(k=>t[k]),n=y.length;
+  if(n<4)return null;
+  const mx=(n-1)/2,my=y.reduce((a,b)=>a+b,0)/n;
+  let num=0,den=0;y.forEach((v,i)=>{num+=(i-mx)*(v-my);den+=(i-mx)**2});
+  const b=num/den,a=my-b*mx;
+  return{keys,y,pred:a+b*n,ck};
+}
+
+function anomalies(){
+  const out=[];
+  for(const c in CATS){const g=data.filter(e=>e.cat===c);if(g.length<10)continue;
+    const L=g.map(e=>Math.log(e.amt)),m=L.reduce((a,b)=>a+b,0)/L.length,sd=Math.sqrt(L.reduce((a,b)=>a+(b-m)**2,0)/L.length)||1;
+    g.forEach((e,i)=>{if((L[i]-m)/sd>2.2)out.push(e)});}
+  return out.sort((a,b)=>b.amt-a.amt);
+}
+
+function render(){
+  try{localStorage.setItem("ss_data",JSON.stringify({nid,data}));}catch(_){}
+  const tot=data.reduce((s,e)=>s+e.amt,0),f=forecast(),an=anomalies();
+  if(f){f.cmp=compare(f.y);f.best=Object.keys(f.cmp).sort((a,b)=>f.cmp[a]-f.cmp[b])[0];f.pred=MODELS[f.best](f.y);}
+  $("mTot").textContent=fmt(tot);$("mAn").textContent=an.length;
+  const now=new Date(),mk=now.getFullYear()*12+now.getMonth();
+  const sofar=data.filter(e=>e.date.getFullYear()*12+e.date.getMonth()===mk).reduce((s,e)=>s+e.amt,0);
+  if(f){$("mFc").textContent=fmt(f.pred);$("mFcL").textContent="Forecast for "+mon(now.getFullYear(),now.getMonth())+" · model: "+f.best+" · spent so far "+fmt(sofar);}
+  const by={};data.forEach(e=>by[e.cat]=(by[e.cat]||0)+e.amt);
+  const cs=Object.entries(by).sort((a,b)=>b[1]-a[1]),mx=cs[0][1];
+  $("bars").innerHTML=cs.map(([c,v])=>`<div class="row"><span>${esc(c)}</span><div class="track"><div class="fill" style="width:${v/mx*100}%;background:var(--c-${esc(c)},var(--c-other))"></div></div><span class="val">${fmt(v)}</span></div>`).join("");
+  $("anom").innerHTML=an.length?an.map(e=>`<div class="warn"><b>${fmt(e.amt)}</b> · ${esc(e.cat)} · ${esc(e.note)} · ${e.date.toLocaleDateString("en-IN")}</div>`).join(""):"<p class='sub'>Nothing unusual found.</p>";
+  const rec=[...data].sort((a,b)=>b.date-a.date||b.id-a.id).slice(0,8);
+  $("rec").innerHTML=rec.map(e=>`<tr><td>${e.date.toLocaleDateString("en-IN")}</td><td>${esc(e.note)}</td><td><span class="badge" style="background:var(--c-${esc(e.cat)},var(--c-other))">${esc(e.cat)}</span></td><td>${fmt(e.amt)}</td></tr>`).join("");
+  if(f){chart(f);cmpTable(f);}
+}
+
+function chart(f){
+  const W=600,H=210,pl=40,pr=14,pt=14,pb=26,n=f.y.length,vals=[...f.y,f.pred],max=Math.max(...vals)*1.1;
+  const X=i=>pl+i*(W-pl-pr)/n,Y=v=>H-pb-v/max*(H-pt-pb);
+  let s=[0,.5,1].map(p=>`<line x1="${pl}" x2="${W-pr}" y1="${Y(max*p/1.1)}" y2="${Y(max*p/1.1)}" stroke="var(--bd)"/><text x="4" y="${Y(max*p/1.1)+3}">${Math.round(max*p/1.1/1000)}k</text>`).join("");
+  s+=`<polyline class="ln" points="${f.y.map((v,i)=>X(i)+","+Y(v)).join(" ")}"/>`;
+  s+=`<line class="fc" x1="${X(n-1)}" y1="${Y(f.y[n-1])}" x2="${X(n)}" y2="${Y(f.pred)}"/>`;
+  f.y.forEach((v,i)=>{const k=f.keys[i];s+=`<circle class="dot" cx="${X(i)}" cy="${Y(v)}" r="3"/><text x="${X(i)-9}" y="${H-8}">${mon(Math.floor(k/12),k%12)}</text>`});
+  s+=`<circle cx="${X(n)}" cy="${Y(f.pred)}" r="5" fill="var(--card)" stroke="var(--ac)" stroke-width="2.5"/><text x="${X(n)-12}" y="${H-8}">Now</text>`;
+  $("chart").innerHTML=s;
+}
+
+function suggest(){
+  const t=$("desc").value.trim();
+  if(!t){$("sug").textContent="Type a description and I’ll guess the category.";return;}
+  const[c,p]=predict(t);
+  if(!c){$("sug").textContent="No match. Pick a category yourself.";return;}
+  $("sug").innerHTML=`Guess: <span class="badge" style="background:var(--c-${c})">${c}</span> (${Math.round(p*100)}% confident)`;
+  if(!manual)$("cat").value=c;
+}
+
+const PLAN=[["Problem analysis & planning",0],["Data collection & preprocessing",0],["Category classification",1],["Model evaluation & embeddings",0],["Database & feedback loop",0],["Bank SMS parsing",1],["Spending forecast",1],["Anomaly detection",1],["REST API",0],["Dashboard",1],["Question answering",1],["Testing, Docker & docs",0]];
+let done={};try{done=JSON.parse(localStorage.getItem("ss_plan")||"{}")}catch(_){}
+function renderPlan(){
+  const n=Object.values(done).filter(Boolean).length;
+  $("plan").innerHTML=PLAN.map(([t,demo],i)=>`<label class="row2"><input type="checkbox" data-i="${i}" ${done[i]?"checked":""}>Week ${i+1}: ${t}<span class="tag">${demo?"shown on this page":"in the Python project"}</span></label>`).join("")+`<p class="sub" style="margin:8px 0 0">${n} of 12 weeks done. Tick a week when you finish it.</p>`;
+}
+function holt(y){let best=null;for(const a of[.2,.4,.6,.8])for(const b of[.1,.3,.5]){let l=y[0],t=y[1]-y[0],sse=0;for(const v of y.slice(1)){sse+=(v-(l+t))**2;const nl=a*v+(1-a)*(l+t);t=b*(nl-l)+(1-b)*t;l=nl;}if(!best||sse<best[0])best=[sse,l,t];}return best[1]+best[2];}
+function lin(y){const n=y.length,mx=(n-1)/2,my=y.reduce((a,b)=>a+b,0)/n;let nu=0,de=0;y.forEach((v,i)=>{nu+=(i-mx)*(v-my);de+=(i-mx)**2});const b=nu/de;return my-b*mx+b*n;}
+const MODELS={"last month":y=>y[y.length-1],"3-month average":y=>y.slice(-3).reduce((a,b)=>a+b,0)/3,"linear trend":lin,"Holt smoothing":holt};
+function compare(y){const r={};for(const k in MODELS){let e=0;for(let i=y.length-4;i<y.length;i++)e+=Math.abs(MODELS[k](y.slice(0,i))-y[i]);r[k]=e/4;}return r;}
+function cmpTable(f){$("cmp").innerHTML=Object.entries(f.cmp).sort((a,b)=>a[1]-b[1]).map(([k,v],i)=>`<tr><td>${k}${i===0?" (used)":""}</td><td>${fmt(v)}</td></tr>`).join("");}
+let NB=null,ML={};
+const TPL=["{v} {i}","{i} from {v}","{i}","{v} order","{i} at {v}","paid {v} for {i}","{v}"];
+const pick=(a,r)=>a[Math.floor(r()*a.length)];
+function genText(c,r){let t=pick(TPL,r).replace("{v}",()=>pick(GEN[c][0],r)).replace("{i}",()=>pick(GEN[c][1],r));
+  if(t.length>5&&r()<.1){const k=1+Math.floor(r()*(t.length-2));t=t.slice(0,k)+t.slice(k+1);}return t;}
+function grams(t){t=t.toLowerCase().replace(/[^a-z\s]/g," ");const out=[];for(const w of t.split(/\s+/).filter(Boolean)){const p=" "+w+" ";for(let n=2;n<=4;n++)for(let i=0;i+n<=p.length;i++)out.push(p.slice(i,i+n));}return out;}
+function trainNB(rows){const cats=[...new Set(rows.map(r=>r[1]))],cnt={},tot={},prior={},V=new Set();
+  cats.forEach(c=>{cnt[c]={};tot[c]=0;prior[c]=0;});
+  rows.forEach(([t,c])=>{prior[c]++;for(const g of grams(t)){cnt[c][g]=(cnt[c][g]||0)+1;tot[c]++;V.add(g);}});
+  return{cats,cnt,tot,prior,V:V.size,N:rows.length};}
+function nbScores(m,text){const gs=grams(text),sc={};m.cats.forEach(c=>{let s=Math.log(m.prior[c]/m.N);for(const g of gs)s+=Math.log(((m.cnt[c][g]||0)+.1)/(m.tot[c]+.1*m.V));sc[c]=s;});return sc;}
+function nbBest(m,t){const sc=nbScores(m,t);return Object.keys(sc).sort((a,b)=>sc[b]-sc[a])[0];}
+function buildModel(){
+  const t0=performance.now(),r=rng(42),set=new Set();
+  for(const c in GEN){let n=0,tries=0;while(n<100&&tries<2000){tries++;const k=genText(c,r)+"|"+c;if(!set.has(k)){set.add(k);n++;}}}
+  const all=[...set].map(k=>k.split("|"));
+  for(let i=all.length-1;i>0;i--){const j=Math.floor(r()*(i+1));[all[i],all[j]]=[all[j],all[i]];}
+  const cut=Math.floor(all.length*.8),tr=all.slice(0,cut),te=all.slice(cut);
+  NB=trainNB(tr);
+  const acc=rows=>rows.filter(([t,c])=>nbBest(NB,t)===c).length/rows.length;
+  const hard=HARD.trim().split("\n").map(l=>{const i=l.lastIndexOf(",");return[l.slice(0,i),l.slice(i+1)];});
+  ML={train:tr.length,test:te.length,testAcc:acc(te),hardAcc:acc(hard),hn:hard.length,V:NB.V,
+    miss:hard.filter(([t,c])=>nbBest(NB,t)!==c).map(([t,c])=>[t,nbBest(NB,t),c]),ms:Math.round(performance.now()-t0)};
+}
+function renderML(){const pc=x=>Math.round(x*100)+"%";
+  $("mlInfo").innerHTML=`<div class="grid g3"><div class="m"><div class="v">${pc(ML.testAcc)}</div><div class="l">Accuracy on ${ML.test} held-out generated entries</div></div><div class="m"><div class="v">${pc(ML.hardAcc)}</div><div class="l">Accuracy on ${ML.hn} hand-written entries with unseen shops</div></div><div class="m"><div class="v">${ML.ms} ms</div><div class="l">Time to train on ${ML.train} rows, ${ML.V} features</div></div></div>
+  <p class="sub" style="margin:10px 0 4px">Naive Bayes on character n-grams, trained in this browser when the page loads. The gap between the two accuracies is the point: the generated data is too easy. Wrong on the hand-written set:</p>
+  <div class="scroll"><table><tbody>${ML.miss.slice(0,8).map(([t,p,c])=>`<tr><td>${esc(t)}</td><td>guessed ${esc(p)}</td><td>actually ${esc(c)}</td></tr>`).join("")}</tbody></table></div>`;}
+let lastSms=null;
+function parseSms(t){
+  const a=t.match(/(?:rs\.?|inr|₹)\s*([\d,]+(?:\.\d+)?)/i);if(!a)return null;
+  const type=/\b(debited|spent|sent|paid|purchase|withdrawn)\b/i.test(t)?"debit":/\b(credited|received|deposited|refund)\b/i.test(t)?"credit":"unknown";
+  const stop="(?=\\s+on\\s|\\s+ref\\b|\\s+upi\\b|\\.\\s|\\.$|,|\\s*$)";
+  let m="";
+  for(const w of["at","to"]){const r=t.match(new RegExp("\\b"+w+"\\s+([A-Za-z0-9&@.' -]+?)"+stop,"i"));if(r){m=r[1].trim().split("@")[0].toLowerCase();break;}}
+  let d=new Date();const n=t.match(/\b(\d{1,2})[-\/](\d{1,2})[-\/](\d{2,4})\b/);
+  if(n){let y=+n[3];if(y<100)y+=2000;d=new Date(y,+n[2]-1,+n[1]);}
+  return{amt:parseFloat(a[1].replace(/,/g,"")),type,merchant:m,date:d};
+}
+function showSms(){
+  const t=$("smsIn").value.trim();lastSms=null;$("smsSave").style.display="none";
+  if(!t){$("smsOut").textContent="";return;}
+  const p=parseSms(t);
+  if(!p){$("smsOut").textContent="No amount found in that message.";return;}
+  if(p.type!=="debit"){$("smsOut").textContent="That looks like a "+p.type+", not a spend. Nothing to save.";return;}
+  const c=predict(p.merchant||t)[0]||"other";lastSms={...p,cat:c};
+  $("smsOut").textContent=fmt(p.amt)+" at "+(p.merchant||"unknown")+" on "+p.date.toLocaleDateString("en-IN")+". Category guess: "+c;
+  $("smsSave").style.display="block";
+}
+const SYN={food:["food","eat","eating","restaurant","meal","meals","dining","lunch","dinner","snacks"],travel:["travel","transport","cab","cabs","commute","fuel","petrol","trip","trips"],education:["education","study","books","book","course","courses"],entertainment:["entertainment","movie","movies","fun","netflix","games","gaming","subscriptions"],bills:["bills","bill","recharge","rent","electricity"],health:["health","medical","medicine","medicines","doctor","gym"],shopping:["shopping","clothes","gadgets"]};
+function askQ(q){
+  const t=q.toLowerCase(),now=new Date(),words=new Set(t.match(/[a-z]+/g)||[]);
+  const cat=Object.keys(SYN).find(c=>SYN[c].some(w=>words.has(w)))||null;
+  const Y=now.getFullYear(),M=now.getMonth(),D=now.getDate();
+  let s=null,e=null,label="";const L=t.match(/last (\d+) (day|week|month)s?/);
+  if(L){s=new Date(now.getTime()-(+L[1])*{day:1,week:7,month:30}[L[2]]*864e5);e=now;label="in the last "+L[1]+" "+L[2]+"s";}
+  else if(t.includes("yesterday")){s=new Date(Y,M,D-1);e=new Date(Y,M,D)-1;label="yesterday";}
+  else if(t.includes("today")){s=new Date(Y,M,D);e=now;label="today";}
+  else if(t.includes("last month")){s=new Date(Y,M-1,1);e=new Date(Y,M,1)-1;label="last month";}
+  else if(t.includes("this month")){s=new Date(Y,M,1);e=now;label="this month";}
+  else if(t.includes("this year")){s=new Date(Y,0,1);e=now;label="this year";}
+  const d=data.filter(x=>(!cat||x.cat===cat)&&(!s||x.date>=s)&&(!e||x.date<=e));
+  const where=(cat?" on "+cat:"")+(label?" "+label:"");
+  if(!d.length)return"No expenses found"+where+".";
+  const sum=d.reduce((a,x)=>a+x.amt,0);
+  if(/(spend|spent) the most|most on|where did|by category|breakdown|categories/.test(t)){const by={};d.forEach(x=>by[x.cat]=(by[x.cat]||0)+x.amt);return"Spending by category"+where+":\n"+Object.entries(by).sort((a,b)=>b[1]-a[1]).map(([c,v])=>"- "+c+": "+fmt(v)).join("\n");}
+  if(/biggest|largest|highest|most expensive|\btop\b/.test(t)){const n=+(t.match(/top (\d+)/)||[0,3])[1];return"Biggest expenses"+where+":\n"+[...d].sort((a,b)=>b.amt-a.amt).slice(0,n).map(x=>"- "+fmt(x.amt)+": "+x.note+" ("+x.cat+")").join("\n");}
+  if(/average|avg|\bmean\b/.test(t))return"Your average expense"+where+" is "+fmt(sum/d.length)+".";
+  if(/how many|number of|\bcount\b/.test(t))return"You have "+d.length+" expenses"+where+".";
+  return"You spent "+fmt(sum)+where+" across "+d.length+" expenses.";
+}
+function init(){
+  $("cat").innerHTML=[...Object.keys(CATS),"other"].map(c=>`<option>${c}</option>`).join("");
+  $("chips").innerHTML=["swiggy biryani","uber to airport","netflix renewal","jio recharge","apollo medicines","udemy python course"].map(t=>`<button class="chip" data-t="${t}">${t}</button>`).join("");
+  $("chips").onclick=e=>{const t=e.target.dataset.t;if(t){$("desc").value=t;manual=false;suggest();$("amt").focus();}};
+  $("desc").oninput=suggest;$("cat").onchange=()=>manual=true;
+  $("save").onclick=()=>{
+    const note=$("desc").value.trim(),amt=parseFloat($("amt").value);
+    if(!note||!(amt>0)){$("toast").textContent="Enter a description and a positive amount.";return;}
+    data.push({id:nid++,amt:Math.round(amt),cat:$("cat").value,note,date:new Date()});
+    $("desc").value="";$("amt").value="";manual=false;suggest();$("toast").textContent="Saved.";render();
+  };
+  $("reset").onclick=()=>{seed();$("toast").textContent="";render();};
+  renderPlan();$("plan").onchange=e=>{done[e.target.dataset.i]=e.target.checked;try{localStorage.setItem("ss_plan",JSON.stringify(done))}catch(_){}renderPlan();};
+  $("smsIn").oninput=showSms;
+  $("smsEx").onclick=()=>{$("smsIn").value="Rs 450.00 debited from A/c XX1234 on 05-11-26 to ZOMATO. UPI Ref 123456";showSms();};
+  $("smsSave").onclick=()=>{if(!lastSms)return;data.push({id:nid++,amt:Math.round(lastSms.amt),cat:lastSms.cat,note:lastSms.merchant||"sms",date:lastSms.date});$("smsIn").value="";showSms();render();};
+  const ask=()=>{const q=$("askIn").value.trim();if(q)$("askOut").textContent=askQ(q);};
+  $("askBtn").onclick=ask;$("askIn").onkeydown=e=>{if(e.key==="Enter")ask();};
+  $("askChips").innerHTML=["how much did I spend on food last month?","what did I spend the most on","top 3 biggest expenses this year"].map(t=>`<button class="chip" data-t="${t}">${t}</button>`).join("");
+  $("askChips").onclick=e=>{const t=e.target.dataset.t;if(t){$("askIn").value=t;ask();}};
+  buildModel();renderML();
+  try{const j=JSON.parse(localStorage.getItem("ss_data")||"null");
+    if(j&&j.data&&j.data.length){data=j.data.map(x=>({...x,date:new Date(x.date)}));nid=j.nid;}else seed();}catch(_){seed();}
+  render();
+}
+init();
+</script>
+</body>
+</html>

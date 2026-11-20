@@ -116,3 +116,13 @@ Implemented spendsense/chat.py for natural language spending queries without raw
   - `python -m unittest discover -s tests -v` (Ran 38 tests in 11.465s, OK)
 - **Test count and result**: 38 tests run, 38 passed (`OK`)
 - **Anything untested**: Anthropic LLM parsing marked untested because ANTHROPIC_API_KEY was not configured in this test environment
+
+### Week 12 — Polish, Containerization, and Documentation
+Added containerization configurations with Dockerfile and docker-compose.yml for running both the FastAPI backend on port 8000 and Streamlit dashboard on port 8501 against a shared SQLite volume. Created a standalone browser-based prototype at docs/index.html using client-side JavaScript for offline GitHub Pages demonstration, completed docs/viva/week_12.md covering packaging and deployment questions, and finalized README.md with full architecture details and real benchmark metrics. The complete test suite contains 38 unit tests covering all core modules, database constraints, SMS parsing, model evaluation, and API routes with 100% test pass rate. Docker builds and live GitHub Pages hosting are marked untested as this environment lacks a running Docker daemon and live Pages domain.
+
+- **Files changed**: `Dockerfile`, `docker-compose.yml`, `docs/index.html`, `docs/viva/week_12.md`, `README.md`, `docs/weekly_updates.md`
+- **Commands run**:
+  - `python -m unittest discover -s tests -v` (38 tests passed in 10.95s, OK)
+- **Test count and result**: 38 tests run, 38 passed (`OK`)
+- **Anything untested**: Docker daemon execution (Docker daemon not active in local environment), GitHub Pages live serving (offline sandbox environment)
+
