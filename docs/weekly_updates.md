@@ -57,3 +57,13 @@ Implemented the full ExpenseDB SQLite data layer supporting CRUD operations, cat
   - `python -m unittest discover -s tests -v` (Ran 16 tests in 9.654s, OK)
 - **Test count and result**: 16 tests run, 16 passed (`OK`)
 - **Anything untested**: None
+
+### Week 6 — Bank SMS Parsing
+Built spendsense/sms.py with regular expressions to extract transaction amount (supporting Rs, Rs., INR, ₹, and comma-separated digits), transaction type (prioritizing debit when both debited and credited to appear), merchant name, UPI ID prefix normalization (stripping @upi handles), and date parsing across numeric and month-abbreviated formats into standard ISO YYYY-MM-DD. Added an interactive SMS paste workflow in the CLI menu and parse-sms subcommand, and verified the parser against 6 distinct real-world banking and non-transactional OTP messages.
+
+- **Files changed**: `spendsense/sms.py`, `main.py`, `docs/viva/week_6.md`, `tests/test_spendsense.py`, `docs/weekly_updates.md`
+- **Commands run**:
+  - `python main.py parse-sms "Rs 450.00 debited from A/c XX1234 on 05-11-26 to ZOMATO. UPI Ref 123456"` (Amount: 450.00, Type: debit, Merchant: zomato, Date: 2026-11-05)
+  - `python -m unittest discover -s tests -v` (Ran 22 tests in 4.421s, OK)
+- **Test count and result**: 22 tests run, 22 passed (`OK`)
+- **Anything untested**: None

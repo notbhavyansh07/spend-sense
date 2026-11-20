@@ -4,7 +4,7 @@ import sys
 from datetime import date
 from pathlib import Path
 
-from spendsense import CATEGORIES, categorizer, importer
+from spendsense import CATEGORIES, categorizer, importer, sms
 from spendsense.database import ExpenseDB
 from spendsense.synthetic import generate_expenses
 
@@ -55,6 +55,23 @@ def menu_add_expense():
         print(f"Saved expense #{new_id}: Rs {amount:.2f} [{category}]")
     except Exception as err:
         print(f"Error saving expense: {err}")
+
+
+def menu_paste_sms():
+    sms_text = input("Paste the bank SMS: ").strip()
+    parsed = sms.parse_sms(sms_text)
+    if not parsed:
+        print("No valid transaction amount found in that message.")
+        return
+    if parsed["type"] != "debit":
+        print(f"Detected a {parsed['type']} transaction (Rs {parsed['amount']:.2f}). Only debits are logged.")
+        return
+
+    desc = parsed["merchant"] or "unknown merchant"
+    print(f"\nExtracted: Rs {parsed['amount']:.2f} at '{desc}' on {parsed['date']}")
+    category = suggest_category(desc)
+    new_id = db.add(parsed["amount"], category, desc, parsed["date"])
+    print(f"Saved expense #{new_id}: Rs {parsed['amount']:.2f} [{category}]")
 
 
 def menu_view_expenses():
@@ -148,12 +165,13 @@ def cmd_compare(embeddings=False):
 
 def run_menu():
     menu_options = {
-        "1": ("Add expense", menu_add_expense),
-        "2": ("View expenses", menu_view_expenses),
-        "3": ("Summary and totals", menu_summary),
-        "4": ("Fix a wrong category (feedback)", menu_fix_category),
-        "5": ("Load demo data (12 months)", menu_demo),
-        "6": ("Train category model", lambda: cmd_train(False)),
+        "1": ("Add expense manually", menu_add_expense),
+        "2": ("Paste a bank transaction SMS", menu_paste_sms),
+        "3": ("View expenses", menu_view_expenses),
+        "4": ("Summary and totals", menu_summary),
+        "5": ("Fix a wrong category (feedback)", menu_fix_category),
+        "6": ("Load demo data (12 months)", menu_demo),
+        "7": ("Train category model", lambda: cmd_train(False)),
     }
     while True:
         print("\n=== SpendSense CLI Menu ===")
@@ -191,6 +209,9 @@ def build_parser():
     pred_p = subparsers.add_parser("predict", help="Predict expense category")
     pred_p.add_argument("text", type=str, help="Expense text")
 
+    sms_p = subparsers.add_parser("parse-sms", help="Parse bank transaction SMS")
+    sms_p.add_argument("text", type=str, help="SMS text")
+
     demo_p = subparsers.add_parser("demo", help="Load 12 months demo data")
 
     imp_p = subparsers.add_parser("import-bank", help="Import bank statement CSV")
@@ -220,6 +241,15 @@ def main():
     elif args.command == "predict":
         cat, conf = categorizer.predict(args.text)
         print(f"Text      : '{args.text}'\nCategory  : {cat}\nConfidence: {conf:.1%}")
+    elif args.command == "parse-sms":
+        res = sms.parse_sms(args.text)
+        if not res:
+            print("No transaction amount detected.")
+        else:
+            print(f"Amount  : Rs {res['amount']:.2f}")
+            print(f"Type    : {res['type']}")
+            print(f"Merchant: {res['merchant']}")
+            print(f"Date    : {res['date']}")
     elif args.command == "demo":
         menu_demo()
     elif args.command == "import-bank":

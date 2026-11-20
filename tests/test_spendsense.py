@@ -7,7 +7,7 @@ import unittest
 from pathlib import Path
 
 import main
-from spendsense import categorizer
+from spendsense import categorizer, sms
 from spendsense.database import ExpenseDB
 from spendsense.importer import clean_text, import_bank_csv
 from spendsense.synthetic import CATS, generate_expenses, generate_labeled
@@ -166,6 +166,54 @@ class TestBankImporter(unittest.TestCase):
         self.assertEqual(count, 2)
         df = self.db.all()
         self.assertEqual(len(df), 2)
+
+
+class TestSMS(unittest.TestCase):
+    def test_upi_debit_zomato(self):
+        text = "Rs 450.00 debited from A/c XX1234 on 05-11-26 to ZOMATO. UPI Ref 123456"
+        res = sms.parse_sms(text)
+        self.assertIsNotNone(res)
+        self.assertEqual(res["amount"], 450.0)
+        self.assertEqual(res["type"], "debit")
+        self.assertEqual(res["merchant"], "zomato")
+        self.assertEqual(res["date"], "2026-11-05")
+
+    def test_card_spent_amazon(self):
+        text = "INR 1,299.00 spent on HDFC Bank Card XX4321 at AMAZON on 03-Nov-2026"
+        res = sms.parse_sms(text)
+        self.assertIsNotNone(res)
+        self.assertEqual(res["amount"], 1299.0)
+        self.assertEqual(res["type"], "debit")
+        self.assertEqual(res["merchant"], "amazon")
+        self.assertEqual(res["date"], "2026-11-03")
+
+    def test_kotak_sent_upi_handle(self):
+        text = "Sent Rs.250.00 from Kotak Bank AC X1234 to ramesh@upi on 02-11-26"
+        res = sms.parse_sms(text)
+        self.assertIsNotNone(res)
+        self.assertEqual(res["amount"], 250.0)
+        self.assertEqual(res["type"], "debit")
+        self.assertEqual(res["merchant"], "ramesh")
+
+    def test_debited_and_credited_to(self):
+        text = "Your a/c no. XX1234 is debited for Rs.89.00 on 04-11-2026 and credited to SWIGGY"
+        res = sms.parse_sms(text)
+        self.assertIsNotNone(res)
+        self.assertEqual(res["amount"], 89.0)
+        self.assertEqual(res["type"], "debit")
+        self.assertEqual(res["merchant"], "swiggy")
+
+    def test_account_credited(self):
+        text = "Rs 5000 credited to your account on 01-11-26"
+        res = sms.parse_sms(text)
+        self.assertIsNotNone(res)
+        self.assertEqual(res["amount"], 5000.0)
+        self.assertEqual(res["type"], "credit")
+
+    def test_otp_returns_none(self):
+        text = "Your OTP is 123456"
+        res = sms.parse_sms(text)
+        self.assertIsNone(res)
 
 
 if __name__ == "__main__":
