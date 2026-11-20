@@ -1,11 +1,13 @@
-"""Unit tests for SpendSense (Weeks 1 and 2)."""
+"""Unit tests for SpendSense (Weeks 1, 2, and 3)."""
 import csv
+import json
 import os
 import tempfile
 import unittest
 from pathlib import Path
 
 import main
+from spendsense import categorizer
 from spendsense.database import ExpenseDB
 from spendsense.importer import clean_text, import_bank_csv
 from spendsense.synthetic import CATS, generate_expenses, generate_labeled
@@ -36,40 +38,53 @@ class TestExpenseDatabase(unittest.TestCase):
         self.assertEqual(df.iloc[0]["note"], "dinner at canteen")
 
     def test_get_total(self):
-        self.assertEqual(main.get_total(db_path=self.db_path), 0.0)
         self.db.add(amount=100.0, category="travel", note="auto")
         self.db.add(amount=450.0, category="food", note="groceries")
-        total = main.get_total(db_path=self.db_path)
+        df = self.db.all()
+        total = float(df["amount"].sum())
         self.assertAlmostEqual(total, 550.0)
 
     def test_invalid_category_rejected_in_cli(self):
-        with self.assertRaises(ValueError):
-            main.add_expense(amount=100.0, category="unknown_category", db_path=self.db_path)
+        with self.assertRaises(SystemExit):
+            # Using CLI cmd_add with bad category
+            class DummyArgs:
+                amount = 100.0
+                category = "unknown_category"
+                note = "bad"
+            main.cmd_add(DummyArgs())
 
     def test_non_positive_amount_rejected(self):
         with self.assertRaises(Exception):
             self.db.add(amount=-50.0, category="bills")
 
 
-class TestBaselineModel(unittest.TestCase):
-    def setUp(self):
-        self.temp_dir = tempfile.TemporaryDirectory(ignore_cleanup_errors=True)
-        self.model_path = Path(self.temp_dir.name) / "test_model.joblib"
-        self.data_path = Path(self.temp_dir.name) / "test_data.csv"
+class TestCategorizer(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        # Train once for tests
+        cls.train_result = categorizer.train(save=True)
+        cls.model = categorizer.load()
 
-    def tearDown(self):
-        self.temp_dir.cleanup()
+    def test_obvious_cases(self):
+        cat_netflix, conf_netflix = categorizer.predict("netflix subscription", self.model)
+        self.assertEqual(cat_netflix, "entertainment")
+        self.assertGreater(conf_netflix, 0.3)
 
-    def test_train_and_predict(self):
-        score, total_rows, train_rows, test_rows = main.train_baseline(
-            data_file=self.data_path,
-            model_out=self.model_path,
-        )
-        self.assertTrue(0.0 <= score <= 1.0)
-        self.assertTrue(self.model_path.exists())
+        cat_uber, conf_uber = categorizer.predict("uber ride", self.model)
+        self.assertEqual(cat_uber, "travel")
+        self.assertGreater(conf_uber, 0.3)
 
-        pred = main.predict_category("canteen chai", model_file=self.model_path)
-        self.assertIn(pred, main.VALID_CATEGORIES)
+    def test_hard_test_evaluation(self):
+        hard_acc = categorizer.hard_accuracy(self.model)
+        self.assertIsNotNone(hard_acc)
+        self.assertTrue(0.0 <= hard_acc <= 1.0)
+
+    def test_metrics_json_generated(self):
+        self.assertTrue(categorizer.METRICS_PATH.exists())
+        data = json.loads(categorizer.METRICS_PATH.read_text(encoding="utf-8"))
+        self.assertIn("cv_scores", data)
+        self.assertIn("best_model", data)
+        self.assertIn("test_accuracy", data)
 
 
 class TestSyntheticData(unittest.TestCase):

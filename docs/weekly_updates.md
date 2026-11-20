@@ -26,3 +26,15 @@ Built a synthetic expense text generator with template randomization, 10% inject
   - `python -m unittest discover -s tests -v`
 - **Test count and result**: 9 tests run, 9 passed (`OK`)
 - **Anything untested**: None
+
+### Week 3 — Category Classification
+Implemented character n-gram TF-IDF feature extraction (char_wb, ngrams 2-4) across Multinomial Naive Bayes, Logistic Regression, and LinearSVC. Selected the best model using 5-fold cross-validation on the 80% training partition, where LinearSVC achieved the highest CV score (0.998 vs 0.996 for Logistic Regression and 0.988 for Naive Bayes). On the held-out test split, LinearSVC scored 1.000 accuracy, but dropped to 0.595 (59.5%) on the unseen-merchant hard evaluation set. Implemented softmax normalization over decision scores for confidence estimation and persisted artifacts to models/categorizer.joblib and models/metrics.json.
+
+- **Files changed**: `spendsense/categorizer.py`, `main.py`, `docs/viva/week_3.md`, `tests/test_spendsense.py`, `docs/weekly_updates.md`
+- **Commands run**:
+  - `python main.py train` (Best: linear_svm, CV: 0.998, Test: 1.000, Hard: 0.595)
+  - `python main.py predict "netflix subscription"` (entertainment, 58.6%)
+  - `python main.py predict "uber ride"` (travel, 52.4%)
+  - `python -m unittest discover -s tests -v` (11 tests in 9.463s, OK)
+- **Test count and result**: 11 tests run, 11 passed (`OK`)
+- **Anything untested**: None
