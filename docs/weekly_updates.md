@@ -48,3 +48,12 @@ Evaluated category classifiers on held-out test data and saved the confusion mat
   - `python -m unittest discover -s tests -v` (Ran 13 tests in 18.581s, OK)
 - **Test count and result**: 13 tests run, 13 passed (`OK`)
 - **Anything untested**: SentenceTransformer inference marked untested because `sentence-transformers` is an optional dependency not installed in this environment
+
+### Week 5 — Database and Feedback Loop
+Implemented the full ExpenseDB SQLite data layer supporting CRUD operations, category corrections, and bulk inserts under CHECK(amount > 0) constraints. Added an interactive CLI terminal menu (python main.py) that prompts for expense descriptions, displays model-predicted categories with confidence scores (Enter accepts, or user inputs correction), and logs category fixes directly to data/feedback.csv. Integrated feedback data concatenation into categorizer.load_dataset so subsequent training runs merge user corrections into the training dataset without catastrophic forgetting.
+
+- **Files changed**: `main.py`, `spendsense/database.py`, `docs/viva/week_5.md`, `tests/test_spendsense.py`, `docs/weekly_updates.md`
+- **Commands run**:
+  - `python -m unittest discover -s tests -v` (Ran 16 tests in 9.654s, OK)
+- **Test count and result**: 16 tests run, 16 passed (`OK`)
+- **Anything untested**: None

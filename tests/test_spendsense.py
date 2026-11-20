@@ -57,6 +57,22 @@ class TestExpenseDatabase(unittest.TestCase):
         with self.assertRaises(Exception):
             self.db.add(amount=-50.0, category="bills")
 
+    def test_update_category_and_delete(self):
+        eid = self.db.add(100.0, "food", "dinner")
+        self.db.update_category(eid, "entertainment")
+        df = self.db.all()
+        self.assertEqual(df.iloc[0]["category"], "entertainment")
+
+        self.db.delete(eid)
+        self.assertTrue(self.db.all().empty)
+
+    def test_clear_database(self):
+        self.db.add(50.0, "food", "tea")
+        self.db.add(80.0, "travel", "bus")
+        self.assertEqual(len(self.db.all()), 2)
+        self.db.clear()
+        self.assertEqual(len(self.db.all()), 0)
+
 
 class TestCategorizer(unittest.TestCase):
     @classmethod
@@ -85,6 +101,12 @@ class TestCategorizer(unittest.TestCase):
         self.assertIn("cv_scores", data)
         self.assertIn("best_model", data)
         self.assertIn("test_accuracy", data)
+
+    def test_feedback_loop(self):
+        categorizer.add_feedback("special tea stall", "food")
+        self.assertTrue(categorizer.FEEDBACK_PATH.exists())
+        df = categorizer.load_dataset()
+        self.assertIn("special tea stall", df["text"].values)
 
     def test_confusion_matrix_created(self):
         cm_path = Path("docs") / "confusion_matrix.png"
