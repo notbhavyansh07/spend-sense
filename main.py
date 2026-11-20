@@ -4,7 +4,7 @@ import sys
 from datetime import date
 from pathlib import Path
 
-from spendsense import CATEGORIES, anomaly, categorizer, forecast, importer, sms
+from spendsense import CATEGORIES, anomaly, categorizer, chat, forecast, importer, sms
 from spendsense.database import ExpenseDB
 from spendsense.synthetic import generate_expenses
 
@@ -213,6 +213,16 @@ def cmd_anomalies():
         )
 
 
+def cmd_ask(question=None):
+    df = db.all()
+    if not question:
+        question = input("Ask a question about your spending: ").strip()
+    if not question:
+        return
+    res = chat.ask(df, question)
+    print(f"\n{res['answer']}")
+
+
 def run_menu():
     menu_options = {
         "1": ("Add expense manually", menu_add_expense),
@@ -221,9 +231,10 @@ def run_menu():
         "4": ("Summary and totals", menu_summary),
         "5": ("Forecast next month spending", cmd_forecast),
         "6": ("Find unusual expenses (anomalies)", cmd_anomalies),
-        "7": ("Fix a wrong category (feedback)", menu_fix_category),
-        "8": ("Load demo data (12 months)", menu_demo),
-        "9": ("Train category model", lambda: cmd_train(False)),
+        "7": ("Ask a question about your spending", cmd_ask),
+        "8": ("Fix a wrong category (feedback)", menu_fix_category),
+        "9": ("Load demo data (12 months)", menu_demo),
+        "10": ("Train category model", lambda: cmd_train(False)),
     }
     while True:
         print("\n=== SpendSense CLI Menu ===")
@@ -253,6 +264,8 @@ def build_parser():
     total_p = subparsers.add_parser("total", help="Show total spending")
     subparsers.add_parser("forecast", help="Forecast next month spending")
     subparsers.add_parser("anomalies", help="Detect unusually large expenses")
+    ask_p = subparsers.add_parser("ask", help="Ask a question about your spending")
+    ask_p.add_argument("question", type=str, help="Question text in English")
 
     train_p = subparsers.add_parser("train", help="Train categorizer models")
     train_p.add_argument("--embeddings", action="store_true", help="Include embeddings")
@@ -292,6 +305,8 @@ def main():
         cmd_forecast()
     elif args.command == "anomalies":
         cmd_anomalies()
+    elif args.command == "ask":
+        cmd_ask(args.question)
     elif args.command == "train":
         cmd_train(args.embeddings)
     elif args.command == "compare":

@@ -106,3 +106,13 @@ Built app.py using Streamlit featuring dual LocalBackend and RemoteBackend abstr
   - `python -m unittest discover -s tests -v` (Ran 33 tests in 18.710s, OK)
 - **Test count and result**: 33 tests run, 33 passed (`OK`)
 - **Anything untested**: Live Streamlit Community Cloud deployment (untested, documented based on specification)
+
+### Week 11 — Question Answering
+Implemented spendsense/chat.py for natural language spending queries without raw SQL construction. Parsed questions into structured parameter specifications (intent, category, start date, end date, limit n) using deterministic regular expression rules covering temporal expressions (today, yesterday, this/last week/month/year, last N days/weeks/months, month names) and category synonym mapping. Validated specifications against whitelisted sets of 5 intents (sum, mean, count, top, breakdown) and standard categories, rejecting SQL injection attempts and executing aggregations solely through pandas DataFrame slicing. Added an ask CLI subcommand and terminal menu option, and supported optional Claude JSON parsing with automatic rule-parser fallback.
+
+- **Files changed**: `spendsense/chat.py`, `main.py`, `docs/viva/week_11.md`, `tests/test_spendsense.py`, `docs/weekly_updates.md`
+- **Commands run**:
+  - `python main.py ask "how much did I spend on food last month"` ("You spent Rs 1,801 on food last month across 6 expenses.")
+  - `python -m unittest discover -s tests -v` (Ran 38 tests in 11.465s, OK)
+- **Test count and result**: 38 tests run, 38 passed (`OK`)
+- **Anything untested**: Anthropic LLM parsing marked untested because ANTHROPIC_API_KEY was not configured in this test environment

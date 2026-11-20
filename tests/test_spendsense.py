@@ -10,7 +10,7 @@ from fastapi.testclient import TestClient
 
 import api
 import main
-from spendsense import anomaly, categorizer, forecast, service, sms
+from spendsense import anomaly, categorizer, chat, forecast, service, sms
 from spendsense.database import ExpenseDB
 from spendsense.importer import clean_text, import_bank_csv
 from spendsense.synthetic import CATS, generate_expenses, generate_labeled
@@ -388,6 +388,51 @@ class TestServiceLayer(unittest.TestCase):
         anom = service.anomaly_records(self.db.all())
         self.assertIsInstance(anom, list)
         self.assertGreater(len(anom), 0)
+
+
+class TestChat(unittest.TestCase):
+    def setUp(self):
+        rows = generate_expenses(months=12, seed=42)
+        import pandas as pd
+        self.df = pd.DataFrame(rows, columns=["amount", "category", "note", "spent_on"])
+        self.df["spent_on"] = pd.to_datetime(self.df["spent_on"])
+
+    def test_sum_food_last_month(self):
+        res = chat.ask(self.df, "how much did I spend on food last month")
+        self.assertEqual(res["spec"]["intent"], "sum")
+        self.assertEqual(res["spec"]["category"], "food")
+        self.assertIsNotNone(res["spec"]["start"])
+        self.assertIn("food", res["answer"].lower())
+
+    def test_what_did_i_spend_the_most_on(self):
+        res = chat.ask(self.df, "what did I spend the most on")
+        self.assertEqual(res["spec"]["intent"], "breakdown")
+        self.assertIn("spending by category", res["answer"].lower())
+
+    def test_top_3_biggest_expenses(self):
+        res = chat.ask(self.df, "top 3 biggest expenses")
+        self.assertEqual(res["spec"]["intent"], "top")
+        self.assertEqual(res["spec"]["n"], 3)
+        self.assertIn("biggest expenses", res["answer"].lower())
+
+    def test_how_many_food_expenses_last_month(self):
+        res = chat.ask(self.df, "how many food expenses last month")
+        self.assertEqual(res["spec"]["intent"], "count")
+        self.assertEqual(res["spec"]["category"], "food")
+        self.assertIn("expenses", res["answer"].lower())
+
+    def test_malicious_spec_rejected(self):
+        # Invalid intent injection
+        with self.assertRaises(ValueError):
+            chat.validate_spec({"intent": "DROP TABLE expenses; --", "category": "food"})
+
+        # Invalid category injection
+        with self.assertRaises(ValueError):
+            chat.validate_spec({"intent": "sum", "category": "food' OR '1'='1"})
+
+        # Invalid date format
+        with self.assertRaises(Exception):
+            chat.validate_spec({"intent": "sum", "category": "food", "start": "2026/99/99"})
 
 
 if __name__ == "__main__":
